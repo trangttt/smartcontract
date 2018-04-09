@@ -1,0 +1,22 @@
+SHR token contract deployment steps
+
+1.
+Deploy ShareToken contract
+
+2.
+Deploy MainSale contract.
+Need to specify the ethUsdRateInCent and the ShareToken contract address
+
+3.
+Go to the deployed ShareToken contract, set the deployed MainSale contract address for the ICO contract.
+This is done by clicking button "setIcoContract"
+
+4.
+Deploy WhiteListManager contract
+
+5.
+Subsequently deploy the WhiteList1, WhiteList2, ... contracts
+
+6.
+Go to the deployed WhiteListManager contract, set the deployed WhiteList addresses.
+This is done by clicking button "setDeployedWhiteList"
