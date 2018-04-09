@@ -147,6 +147,16 @@ contract ShareToken is ERC20Token, Owned {
         presaleTokenIssuedTotal = 0;
     }
 
+    function totalSupply() constant returns (uint) {
+
+        return (totalTokenIssued + airDropTokenIssuedTotal + bountyTokenIssuedTotal);
+    }
+
+    function totalMainSaleTokenIssued() constant returns (uint) {
+
+        return totalTokenIssued;
+    }
+
     function transfer(address _to, uint _amount) returns (bool success) {
 
         require( locked[msg.sender] == false );    
@@ -368,7 +378,7 @@ contract MainSale is Owned, usingOraclize {
         // Calc the token amount
         tokens = transferredAmount.div(tokenPriceInCent) * E2;
 
-        uint totalIssuedTokens = shrToken.totalSupply();
+        uint totalIssuedTokens = shrToken.totalMainSaleTokenIssued();
 
         // If the allocated tokens exceed the limit, must refund to user
         if (totalIssuedTokens.add(tokens) > TOKEN_SUPPLY_MAINSALE_LIMIT) {
@@ -443,7 +453,7 @@ contract MainSale is Owned, usingOraclize {
 
     function remainingTokensForSale() constant returns (uint) {
         
-        return TOKEN_SUPPLY_MAINSALE_LIMIT.sub(shrToken.totalSupply());
+        return TOKEN_SUPPLY_MAINSALE_LIMIT.sub(shrToken.totalMainSaleTokenIssued());
     }
 
     function __callback(bytes32 myid, string result) {
