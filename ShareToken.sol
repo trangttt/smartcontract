@@ -178,6 +178,8 @@ contract ShareToken is ERC20Token, Owned {
     string public constant symbol = "SHR";
     uint8  public constant decimals = 2;
 
+    address public icoContract;
+
     // Any token amount must be multiplied by this const to reflect decimals
     uint constant E2 = 10**2;
 
@@ -232,9 +234,19 @@ contract ShareToken is ERC20Token, Owned {
         }
     }
 
-    function sell(address buyer, uint tokens) onlyOwner returns (bool success) {
+    function setIcoContract(address _icoContract) onlyOwner {
+        
+        if (_icoContract != address(0)) {
+
+            icoContract = _icoContract;
+        }
+    }
+
+    function sell(address buyer, uint tokens) returns (bool success) {
       
         require (tokens > 0);
+        require (buyer != address(0));
+        require (msg.sender == icoContract);
 
         // Register tokens issued to the buyer
         balances[buyer] = balances[buyer].add(tokens);
