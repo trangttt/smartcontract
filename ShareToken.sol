@@ -1,6 +1,8 @@
 pragma solidity ^0.4.16;
 
 import "./oraclizeAPI_0.5.sol";
+import "./WhiteListManager.sol";
+import "./Owned.sol";
 
 library SafeMath {
 
@@ -23,38 +25,6 @@ library SafeMath {
         uint256 c = a + b;
         assert(c >= a);
         return c;
-    }
-}
-
-contract Owned {
-
-    address public owner;
-    address public newOwner;
-
-    event OwnershipTransferProposed(address indexed _from, address indexed _to);
-    event OwnershipTransferred(address indexed _from, address indexed _to);
-
-    modifier onlyOwner {
-        require( msg.sender == owner );
-        _;
-    }
-
-    function Owned() public {
-        owner = msg.sender;
-    }
-
-    function transferOwnership(address _newOwner) onlyOwner {
-        require( _newOwner != owner );
-        require( _newOwner != address(0x0) );
-        OwnershipTransferProposed(owner, _newOwner);
-        newOwner = _newOwner;
-    }
-
-    function acceptOwnership() {
-        require(msg.sender == newOwner);
-        OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-        newOwner = address(0);
     }
 }
 
@@ -138,35 +108,6 @@ contract ERC20Token is ERC20Interface {
     /* that can be transferred by spender */
     function allowance(address _owner, address _spender) constant returns (uint remaining) {
         return allowed[_owner][_spender];
-    }
-}
-
-contract WhitelistedCrowdsale is Owned {
-
-    using SafeMath for uint256;
-
-    // Manage the whitelist addr
-    mapping (address => bool) whitelist;
-    address[] whitelistAddresses;
-
-    function addToWhitelist(address buyer) public onlyOwner {
-        require(buyer != 0x0);
-        whitelist[buyer] = true;
-        whitelistAddresses.push(buyer);
-    }
-
-    function addManyToWhitelist(address[] buyerList) public onlyOwner {
-        
-        for (uint i = 0; i < buyerList.length; i++) {
-            if (buyerList[i] != 0x0) {
-                whitelist[buyerList[i]] = true;
-                whitelistAddresses.push(buyerList[i]);
-            }
-        }
-    }
-
-    function isWhitelisted(address buyer) public constant returns (bool) {
-        return whitelist[buyer];
     }
 }
 
@@ -255,7 +196,7 @@ contract ShareToken is ERC20Token, Owned {
         totalTokenIssued = totalTokenIssued.add(tokens);
 
         // Lock the buyer
-        locked[msg.sender] = true;
+        locked[buyer] = true;
 
         Transfer(address(0x0), buyer, tokens);
 
@@ -361,16 +302,20 @@ contract ShareToken is ERC20Token, Owned {
     }
 }
 
-contract MainSale is WhitelistedCrowdsale, usingOraclize {
+contract MainSale is Owned, usingOraclize {
     
     using SafeMath for uint;
+
+    WhiteListManager public whitelistManager;
 
     ShareToken public shrToken;
 
     // Any token amount must be multiplied by this const to reflect decimals
     uint constant E2 = 10**2;
 
-    bool public isIcoRunning = true;
+    // Will be set to true only if WhiteList contracts are created
+    bool public isIcoRunning = false;
+    
     bool public isUpdateRateRunning = true;
 
     uint public tokenPriceInCent = 2; // cent or $0.02
@@ -404,7 +349,7 @@ contract MainSale is WhitelistedCrowdsale, usingOraclize {
         }
         
         // Only whitelisted address can buy tokens. Otherwise, refund
-        if (!isWhitelisted(msg.sender)) {
+        if (!whitelistManager.isWhitelisted(msg.sender)) {
 
             msg.sender.transfer(msg.value);
             revert();
@@ -456,6 +401,24 @@ contract MainSale is WhitelistedCrowdsale, usingOraclize {
         require(msg.sender == owner);
         _to.transfer(this.balance);
     }
+
+    function setWhiteListManager(address _whitelistManager) onlyOwner {
+
+        whitelistManager = WhiteListManager(_whitelistManager);
+
+        // Enable ICO
+        isIcoRunning = true;
+    }
+
+    /*
+    function setWhiteListMany(address[] addrList) onlyOwner {
+
+        for (uint i = 0; i < addrList.length; i++) {
+
+            whiteList.push(WhiteList(addrList[i]));
+        }
+    }
+    */
 
     function setEthUsdRateInCent(uint _ethUsdRateInCent) onlyOwner {
         
