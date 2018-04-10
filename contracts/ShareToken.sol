@@ -43,7 +43,7 @@ contract ShareToken is ERC20Token, Owned {
 
     function totalSupply() constant returns (uint) {
 
-        return (totalTokenIssued + airDropTokenIssuedTotal + bountyTokenIssuedTotal);
+        return (totalTokenIssued + seedAndPresaleTokenIssuedTotal + airDropTokenIssuedTotal + bountyTokenIssuedTotal);
     }
 
     function totalMainSaleTokenIssued() constant returns (uint) {
