@@ -15,6 +15,8 @@ contract ShareToken is ERC20Token, Owned {
 
     address public icoContract;
 
+    bool public transferPresaleEnabled = false;
+
     // Any token amount must be multiplied by this const to reflect decimals
     uint constant E2 = 10**2;
 
@@ -29,16 +31,14 @@ contract ShareToken is ERC20Token, Owned {
     uint public constant TOKEN_SUPPLY_SEED_LIMIT      = 500000000 * E2; // 500,000,000 tokens (0.5 billion)
     uint public constant TOKEN_SUPPLY_PRESALE_LIMIT   = 2500000000 * E2; // 2,500,000,000.00 tokens (2.5 billion)
 
-    uint public seedTokenIssuedTotal;
-    uint public presaleTokenIssuedTotal;
+    uint public seedAndPresaleTokenIssuedTotal;
 
     function ShareToken() public {
 
         totalTokenIssued = 0;
         airDropTokenIssuedTotal = 0;
         bountyTokenIssuedTotal = 0;
-        seedTokenIssuedTotal = 0;
-        presaleTokenIssuedTotal = 0;
+        seedAndPresaleTokenIssuedTotal = 0;
     }
 
     function totalSupply() constant returns (uint) {
@@ -149,59 +149,44 @@ contract ShareToken is ERC20Token, Owned {
         Transfer(address(0x0), _to, _amount);
     }
 
-    function transferSeedToken(address _to, uint _amount) onlyOwner {
+    function enableTransferPresale() onlyOwner {
 
-        require(seedTokenIssuedTotal < TOKEN_SUPPLY_SEED_LIMIT);
+        transferPresaleEnabled = true;   
+    }
 
-        uint remainingTokens = TOKEN_SUPPLY_SEED_LIMIT.sub(seedTokenIssuedTotal);
+    function disableTransferPresale() onlyOwner {
+
+        transferPresaleEnabled = false;   
+    }
+
+    function transferSeedToken(address _to, uint _amount) {
+
+        require(transferPresaleEnabled);
+
+        uint seedAndPresaleTokenLimit = TOKEN_SUPPLY_SEED_LIMIT + TOKEN_SUPPLY_PRESALE_LIMIT;
+        require(seedAndPresaleTokenIssuedTotal < seedAndPresaleTokenLimit);
+
+        uint remainingTokens = seedAndPresaleTokenLimit.sub(seedAndPresaleTokenIssuedTotal);
         require (_amount <= remainingTokens);
 
         // Register tokens to the receiver
         balances[_to] = balances[_to].add(_amount);
 
         // Update total amount of tokens issued
-        seedTokenIssuedTotal = seedTokenIssuedTotal.add(_amount);
+        seedAndPresaleTokenIssuedTotal = seedAndPresaleTokenIssuedTotal.add(_amount);
 
         // Do not lock the seed
 
         Transfer(address(0x0), _to, _amount);
     }
 
-    function transferSeedTokenMany(address[] addrList, uint[] amountList) onlyOwner {
+    function transferSeedTokenMany(address[] addrList, uint[] amountList) {
 
         require(addrList.length == amountList.length);
 
         for (uint i = 0; i < addrList.length; i++) {
 
             transferSeedToken(addrList[i], amountList[i]);
-        }
-    }
-
-    function transferPreSaleToken(address _to, uint _amount) onlyOwner {
-
-        require(presaleTokenIssuedTotal < TOKEN_SUPPLY_PRESALE_LIMIT);
-
-        uint remainingTokens = TOKEN_SUPPLY_PRESALE_LIMIT.sub(presaleTokenIssuedTotal);
-        require (_amount <= remainingTokens);
-
-        // Register tokens to the receiver
-        balances[_to] = balances[_to].add(_amount);
-
-        // Update total amount of tokens issued
-        presaleTokenIssuedTotal = presaleTokenIssuedTotal.add(_amount);
-
-        // Do not lock the presale
-
-        Transfer(address(0x0), _to, _amount);
-    }
-
-    function transferPreSaleTokenMany(address[] addrList, uint[] amountList) onlyOwner {
-
-        require(addrList.length == amountList.length);
-
-        for (uint i = 0; i < addrList.length; i++) {
-
-            transferPreSaleToken(addrList[i], amountList[i]);
         }
     }
 }

@@ -46,18 +46,10 @@ contract MainSale is Owned, usingOraclize {
     /* Allow whitelisted users to send ETH to token contract for buying tokens */
     function () payable {
         
-        if (isIcoRunning == false) {
+        require (isIcoRunning);
 
-            msg.sender.transfer(msg.value);
-            revert();
-        }
-        
         // Only whitelisted address can buy tokens. Otherwise, refund
-        if (!whitelistManager.isWhitelisted(msg.sender)) {
-
-            msg.sender.transfer(msg.value);
-            revert();
-        }
+        require (whitelistManager.isWhitelisted(msg.sender));
 
         if (isUpdateRateRunning == false) {
             

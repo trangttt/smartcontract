@@ -2,6 +2,7 @@ SHR token contract deployment steps
 
 1.
 Deploy ShareToken contract
+Enable to transfer seed and presale tokens by clicking the button "enableTransferPresale"
 
 2.
 Deploy MainSale contract.
@@ -13,9 +14,19 @@ This is done by clicking button "setIcoContract"
 
 4.
 Deploy WhiteListManager contract
+Enable to set the whitelist by clicking the button "enableSetWhitelist"
+
+5.
+Go to the deployed MainSale contract
+Set the whitelist manager by clicking the button "setWhitelistManager"
 
 5.
 Subsequently deploy the WhiteList1, WhiteList2, ... contracts
+
+At first, must check if enableTransferPresale of the ShareToken contract and if enableSetWhitelist of the WhiteListManager
+
+For the deployment, must specify the address of the deployed WhiteListManager contract and the address of the deployed ShareToken contract.
+For example: WhiteList1("address_1", "address_2")
 
 6.
 Go to the deployed WhiteListManager contract, set the deployed WhiteList addresses.

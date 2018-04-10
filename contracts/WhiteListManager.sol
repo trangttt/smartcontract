@@ -1,37 +1,60 @@
 pragma solidity ^0.4.16;
 
-import "./WhiteList.sol";
 import "./Owned.sol";
 
 contract WhiteListManager is Owned {
 
-    WhiteList[] whitelist;
+    // The list here will be upated by multiple separate WhiteList contracts
+    mapping (address => bool) public list;
 
-    event IsWhiteList(bool res);
+    bool public setWhitelistEnabled = false;
 
     function WhiteListManager() public {
 
     }
 
-    function setDeployedWhiteList(address[] _whitelist) onlyOwner {
+    function enableSetWhitelist() public onlyOwner {
 
-        for (uint i = 0; i < _whitelist.length; i++) {
+        setWhitelistEnabled = true;
+    }
+
+    function disableSetWhitelist() public onlyOwner {
+
+        setWhitelistEnabled = false;
+    }
+
+    function unset(address addr) public {
+
+        require(setWhitelistEnabled);
+        require(addr != address(0x0));
+        list[addr] = false;
+    }
+
+    function unsetMany(address[] addrList) public {
+
+        for (uint i = 0; i < addrList.length; i++) {
             
-            whitelist.push(WhiteList(_whitelist[i]));
+            unset(addrList[i]);
         }
     }
 
-    function isWhitelisted(address addr) returns (bool) {
+    function set(address addr) public {
 
-        for (uint i = 0; i < whitelist.length; i++) {
+        require(setWhitelistEnabled);
+        require(addr != address(0x0));
+        list[addr] = true;
+    }
+
+    function setMany(address[] addrList) public {
+
+        for (uint i = 0; i < addrList.length; i++) {
             
-            if (whitelist[i].isWhitelisted(addr)) {
-                emit IsWhiteList(true);
-                return true;
-            }
+            set(addrList[i]);
         }
+    }
 
-        emit IsWhiteList(false);
-        return false;
+    function isWhitelisted(address addr) public returns (bool) {
+
+        return list[addr];
     }
 }
