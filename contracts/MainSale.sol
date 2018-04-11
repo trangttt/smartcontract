@@ -46,7 +46,7 @@ contract MainSale is Owned, usingOraclize {
         require (isIcoRunning);
 
         // Only whitelisted address can buy tokens. Otherwise, refund
-        require (shrToken.isWhitelist(msg.sender));
+        require (shrToken.isWhitelisted(msg.sender));
 
         if (isUpdateRateRunning == false) {
             

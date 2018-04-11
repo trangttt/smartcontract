@@ -33,7 +33,7 @@ contract WhiteListManager is Owned {
         list[addr] = true;
     }
 
-    function setMany(address[] addrList) public {
+    function setMany(address[] addrList) public onlyOwner {
 
         for (uint i = 0; i < addrList.length; i++) {
             
