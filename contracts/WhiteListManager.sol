@@ -7,40 +7,28 @@ contract WhiteListManager is Owned {
     // The list here will be updated by multiple separate WhiteList contracts
     mapping (address => bool) public list;
 
-    bool public setWhitelistEnabled = true;
-
     function WhiteListManager() public {
 
     }
 
-    function enableSetWhitelist() public onlyOwner {
+    function unset(address addr) public onlyOwner {
 
-        setWhitelistEnabled = true;
-    }
-
-    function disableSetWhitelist() public onlyOwner {
-
-        setWhitelistEnabled = false;
-    }
-
-    function unset(address addr) public {
-
-        require(setWhitelistEnabled);
         require(addr != address(0x0));
         list[addr] = false;
     }
 
-    function unsetMany(address[] addrList) public {
+    function unsetMany(address[] addrList) public onlyOwner {
 
         for (uint i = 0; i < addrList.length; i++) {
             
-            unset(addrList[i]);
+            if (addrList[i] != address(0x0)) {
+                list[addrList[i]] = false;
+            }
         }
     }
 
-    function set(address addr) public {
+    function set(address addr) public onlyOwner {
 
-        require(setWhitelistEnabled);
         require(addr != address(0x0));
         list[addr] = true;
     }
@@ -49,7 +37,9 @@ contract WhiteListManager is Owned {
 
         for (uint i = 0; i < addrList.length; i++) {
             
-            set(addrList[i]);
+            if (addrList[i] != address(0x0)) {
+                list[addrList[i]] = true;
+            }
         }
     }
 

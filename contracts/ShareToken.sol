@@ -16,8 +16,6 @@ contract ShareToken is ERC20Token, Owned {
 
     address public icoContract;
 
-    bool public transferPresaleEnabled = true;
-
     // Any token amount must be multiplied by this const to reflect decimals
     uint constant E2 = 10**2;
 
@@ -204,19 +202,8 @@ contract ShareToken is ERC20Token, Owned {
         Transfer(address(0x0), _to, _amount);
     }
 
-    function enableTransferPresale() onlyOwner {
+    function transferPresaleToken(address _to, uint _amount) onlyOwner {
 
-        transferPresaleEnabled = true;   
-    }
-
-    function disableTransferPresale() onlyOwner {
-
-        transferPresaleEnabled = false;   
-    }
-
-    function transferPresaleToken(address _to, uint _amount) {
-
-        require(transferPresaleEnabled);
         require(_amount > 0);
 
         uint seedAndPresaleTokenLimit = TOKEN_SUPPLY_SEED_LIMIT + TOKEN_SUPPLY_PRESALE_LIMIT;
@@ -236,7 +223,7 @@ contract ShareToken is ERC20Token, Owned {
         Transfer(address(0x0), _to, _amount);
     }
 
-    function transferPresaleTokenMany(address[] addrList, uint[] amountList) {
+    function transferPresaleTokenMany(address[] addrList, uint[] amountList) onlyOwner {
 
         require(addrList.length == amountList.length);
 
