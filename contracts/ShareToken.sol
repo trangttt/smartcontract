@@ -47,6 +47,11 @@ contract ShareToken is ERC20Token, Owned {
         wlm = WhiteListManager(whitelistManagerAddr);
     }
 
+    function setWhiteListManager(address whitelistManagerAddr) public onlyOwner {
+
+        wlm = WhiteListManager(whitelistManagerAddr);
+    }
+
     function unlockMainSaleToken() public onlyOwner {
 
         mainSaleTokenLocked = false;
