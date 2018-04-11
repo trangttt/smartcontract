@@ -9,6 +9,8 @@ contract MainSale is Owned, usingOraclize {
     
     using SafeMath for uint;
 
+    WhiteListManager public whitelistManager;
+
     ShareToken public shrToken;
 
     // Any token amount must be multiplied by this const to reflect decimals
@@ -28,30 +30,29 @@ contract MainSale is Owned, usingOraclize {
 
     // Must pre-deploy the ShareToken contract to get its address
     // Must supply the ETH/USD rate (in cent) upon token creation
-    function MainSale(uint _ethUsdRateInCent, address _tokenAddress) payable {
+    function MainSale(uint _ethUsdRateInCent, address _tokenAddress) public payable {
 
         require(_ethUsdRateInCent > 0);
-        require( _tokenAddress != address(0x0) );
+        require(_tokenAddress != address(0x0));
 
         ethUsdRateInCent = _ethUsdRateInCent;
 
         shrToken = ShareToken(_tokenAddress);
 
-        updateRate();
+        //updateRate();
     }
 
     /* Allow whitelisted users to send ETH to token contract for buying tokens */
-    function () payable {
-        
+    function () public payable {
         require (isIcoRunning);
 
         // Only whitelisted address can buy tokens. Otherwise, refund
         require (shrToken.isWhitelist(msg.sender));
 
-        if (isUpdateRateRunning == false) {
+        // if (isUpdateRateRunning == false) {
             
-            updateRate();
-        }
+        //     updateRate();
+        // }
         
         uint tokens = 0;
 

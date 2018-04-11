@@ -111,17 +111,17 @@ contract ShareToken is ERC20Token, Owned {
         }
     }
 
-    function totalSupply() constant returns (uint) {
+    function totalSupply() public constant returns (uint) {
 
         return (totalTokenIssued + seedAndPresaleTokenIssuedTotal + airDropTokenIssuedTotal + bountyTokenIssuedTotal);
     }
 
-    function totalMainSaleTokenIssued() constant returns (uint) {
+    function totalMainSaleTokenIssued() public constant returns (uint) {
 
         return totalTokenIssued;
     }
 
-    function transfer(address _to, uint _amount) returns (bool success) {
+    function transfer(address _to, uint _amount) public returns (bool success) {
 
         require( isLocked(msg.sender) == false );    
         require( isLocked(_to) == false );
@@ -129,7 +129,7 @@ contract ShareToken is ERC20Token, Owned {
         return super.transfer(_to, _amount);
     }
 
-    function transferFrom(address _from, address _to, uint _amount) returns (bool success) {
+    function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
         
         require( isLocked(_from) == false );
         require( isLocked(_to) == false );
@@ -137,7 +137,37 @@ contract ShareToken is ERC20Token, Owned {
         return super.transferFrom(_from, _to, _amount);
     }
 
+<<<<<<< Updated upstream
     function setIcoContract(address _icoContract) onlyOwner {
+||||||| merged common ancestors
+    function unLock(address _participant) onlyOwner {
+
+        locked[_participant] = false;
+    }
+
+    function unLockMultiple(address[] _participants) onlyOwner {
+
+        for (uint i = 0; i < _participants.length; i++) {
+            locked[_participants[i]] = false;
+        }
+    }
+
+    function setIcoContract(address _icoContract) onlyOwner {
+=======
+    function unLock(address _participant) public onlyOwner {
+
+        locked[_participant] = false;
+    }
+
+    function unLockMultiple(address[] _participants) public onlyOwner {
+
+        for (uint i = 0; i < _participants.length; i++) {
+            locked[_participants[i]] = false;
+        }
+    }
+
+    function setIcoContract(address _icoContract) public onlyOwner {
+>>>>>>> Stashed changes
         
         if (_icoContract != address(0)) {
 
@@ -145,7 +175,7 @@ contract ShareToken is ERC20Token, Owned {
         }
     }
 
-    function sell(address buyer, uint tokens) returns (bool success) {
+    function sell(address buyer, uint tokens) public returns (bool success) {
       
         require (tokens > 0);
         require (buyer != address(0));
@@ -162,7 +192,7 @@ contract ShareToken is ERC20Token, Owned {
         return true;
     }
 
-    function rewardAirdrop(address _to, uint _amount) onlyOwner {
+    function rewardAirdrop(address _to, uint _amount) public onlyOwner {
 
         require(airDropTokenIssuedTotal < TOKEN_SUPPLY_AIRDROP_LIMIT);
 
@@ -183,7 +213,7 @@ contract ShareToken is ERC20Token, Owned {
         Transfer(address(0x0), _to, _amount);
     }
 
-    function rewardBounty(address _to, uint _amount) onlyOwner {
+    function rewardBounty(address _to, uint _amount) public onlyOwner {
 
         require(bountyTokenIssuedTotal < TOKEN_SUPPLY_BOUNTY_LIMIT);
 
@@ -204,17 +234,23 @@ contract ShareToken is ERC20Token, Owned {
         Transfer(address(0x0), _to, _amount);
     }
 
-    function enableTransferPresale() onlyOwner {
+    function enableTransferPresale() public onlyOwner {
 
         transferPresaleEnabled = true;   
     }
 
-    function disableTransferPresale() onlyOwner {
+    function disableTransferPresale() public onlyOwner {
 
         transferPresaleEnabled = false;   
     }
 
+<<<<<<< Updated upstream
     function transferPresaleToken(address _to, uint _amount) {
+||||||| merged common ancestors
+    function transferSeedToken(address _to, uint _amount) {
+=======
+    function transferSeedToken(address _to, uint _amount) public {
+>>>>>>> Stashed changes
 
         require(transferPresaleEnabled);
         require(_amount > 0);

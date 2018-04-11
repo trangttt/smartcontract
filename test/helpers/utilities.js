@@ -1,16 +1,26 @@
+var constants = require('../config/ShareTokenFigures.js');
 /*
  * Get balance of an account
  */
 var getBalance = async function(token, account){
     const balance = await token.balanceOf(account);
-    return balance.toNumber()
+    return balance.toNumber();
 }
 
 /*
  * Sell to an *account* a *number* of token, and return the current balance
  */
- var sellToAccount = async function(token, account, number){
-    const tx = await token.sell(account, number);
+ var sellToAccount = async function(token, mainsale, account, number){
+    // 10^18 wei = ETH_USD_RATE cent
+    // 1 token = TOKEN_PRICE cent
+    // exclude decimal places, as TOKEN_PRICE doesn't include decimal places
+
+    number = number / 10**constants.DECIMAL_PLACES;
+
+
+    var value = number * ( constants.TOKEN_PRICE * (10**18) / constants.ETH_USD_RATE);
+
+    const tx = await mainsale.sendTransaction({from: account, value: value});
 
     return getBalance(token, account);
 }

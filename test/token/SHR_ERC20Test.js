@@ -4,6 +4,8 @@ var utilities = require('../helpers/utilities.js');
 var constants = require('../config/ShareTokenFigures.js');
 
 const ShareToken = artifacts.require('ShareToken');
+const MainSale = artifacts.require('MainSale');
+const Whitelist = artifacts.require('WhiteListManager');
 
 
 //*****************************************************************************************
@@ -17,12 +19,33 @@ var sellToAccount = utilities.sellToAccount
 //*****************************************************************************************
 
 contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT]) {
+    var accounts = [OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT];
     console.log("OWNER: ", OWNER);
+    console.log("NEW OWNER: ", NEW_OWNER);
     console.log("RECIPIENT: ", RECIPIENT);
     console.log("ANOTHER ACCOUNT:", ANOTHER_ACCOUNT);
 
     beforeEach(async function () {
        this.token = await ShareToken.new();
+
+       this.mainsale = await MainSale.new(constants.ETH_USD_RATE, this.token.address);
+
+       // set ico
+       await this.token.setIcoContract(this.mainsale.address);
+
+       // deploy Whitelist
+       this.whitelist = await Whitelist.new();
+
+       // set whitelist to mainsale
+       this.mainsale.setWhiteListManager(this.whitelist.address);
+
+       // enable whitelist
+       await this.whitelist.enableSetWhitelist();
+
+       for (var i=0; i < accounts.length; i++){
+           await this.whitelist.set(accounts[i]);
+       }
+
     });
 
     //*****************************************************************************************
@@ -75,7 +98,10 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
     
     it('Sell to an address, check balance', async function(){
         // sell some tokens to ANOTHER_ACCOUNT
-        const balanceAfter = await sellToAccount(this.token, ANOTHER_ACCOUNT, constants.TEST_BALANCE);
+        const balanceAfter = await sellToAccount(this.token,
+                                                 this.mainsale,
+                                                 ANOTHER_ACCOUNT,
+                                                 constants.TEST_BALANCE);
 
         // check balance of ANOTHER_ACCOUNT
         assert.equal(balanceAfter, constants.TEST_BALANCE);
@@ -83,7 +109,10 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
 
 
     it('Sell and then transfer locked token should fail', async function(){
-        const balanceAfter = await sellToAccount(this.token, ANOTHER_ACCOUNT, constants.TEST_BALANCE);
+        const balanceAfter = await sellToAccount(this.token,
+                                                 this.mainsale,
+                                                 ANOTHER_ACCOUNT,
+                                                 constants.TEST_BALANCE);
 
         // check balance of ANOTHER_ACCOUNT
         assert.equal(balanceAfter, constants.TEST_BALANCE);
@@ -93,7 +122,10 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
 
 
     it('Unlocked tokens should be transferable', async function(){
-        const balanceAfter = await sellToAccount(this.token, ANOTHER_ACCOUNT, constants.TEST_BALANCE);
+        const balanceAfter = await sellToAccount(this.token,
+                                                 this.mainsale,
+                                                 ANOTHER_ACCOUNT,
+                                                 constants.TEST_BALANCE);
 
         // check balance of ANOTHER_ACCOUNT
         assert.equal(balanceAfter, constants.TEST_BALANCE);
@@ -104,7 +136,7 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
         // Transfer
         const tx1 = await this.token.transfer(NEW_OWNER, constants.TEST_BALANCE, {from: ANOTHER_ACCOUNT})
 
-        // check account balances
+        // check account balance
         const anotherBalance = await getBalance(this.token, ANOTHER_ACCOUNT)
         const ownerBalance = await getBalance(this.token, NEW_OWNER)
         assert.equal(anotherBalance, 0);
@@ -129,7 +161,7 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
 
     it('Transfer from account with insufficient balance', async function(){
         // deposit some tokens to ANOTHER_ACCOUNT
-        await sellToAccount(this.token, ANOTHER_ACCOUNT, constants.TEST_BALANCE)
+        await sellToAccount(this.token, this.mainsale, ANOTHER_ACCOUNT, constants.TEST_BALANCE)
 
         // ANOTHER_ACCOUNT approve OWNER 3 token
         const tx = await this.token.approve(OWNER, constants.TEST_BALANCE,
@@ -139,12 +171,14 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
         await this.token.unLock(ANOTHER_ACCOUNT);
         await this.token.unLock(OWNER);
 
-        await assertRevert.assertRevert(this.token.transferFrom(ANOTHER_ACCOUNT, NEW_OWNER, 4))
+        await assertRevert.assertRevert(this.token.transferFrom(ANOTHER_ACCOUNT, 
+                                                                NEW_OWNER,
+                                                                constants.TEST_BALANCE + 1));
     })
 
     it('Transfer from account with sufficient balance', async function(){
         // deposit some token to OWNER
-        await sellToAccount(this.token, OWNER, constants.TEST_BALANCE);
+        await sellToAccount(this.token, this.mainsale, OWNER, constants.TEST_BALANCE);
         assert.equal(await getBalance(this.token, OWNER), constants.TEST_BALANCE);
 
         // approve  ANOTHER_ACCOUNT to spend
