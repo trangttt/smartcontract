@@ -20,10 +20,10 @@ var expectLogEvent = expectEvent.inLog
 var assertRevert = assertRevert.assertRevert
 
 var seedSingular = async function(contract, account, tokens){
-    return await expectTxEvent(contract.transferSeedToken(account, tokens), "Transfer");
+    return await expectTxEvent(contract.transferPresaleToken(account, tokens), "Transfer");
 }
 var seedPlural = async function(contract, accounts, tokens) {
-    return await expectTxEvent(contract.transferSeedTokenMany(accounts, tokens), "Transfer");
+    return await expectTxEvent(contract.transferPresaleTokenMany(accounts, tokens), "Transfer");
 }
 
 var presaleSingular = async function(contract, account, tokens){
@@ -83,17 +83,17 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT, 
         //const transferEvent = logs.find(e => e.event === "Transfer");
         //console.log(transferString(transferEvent))
 
-        await assertRevert(this.token.transferSeedToken(ANOTHER_ACCOUNT, -1 * constants.TEST_BALANCE));
+        await assertRevert(this.token.transferPresaleToken(ANOTHER_ACCOUNT, -1 * constants.TEST_BALANCE));
     })
 
     it('Seed with an absurdly large amount of tokens should revert', async function(){
-        await assertRevert(this.token.transferSeedToken(ANOTHER_ACCOUNT, constants.LARGER_THAN_TOTAL));
+        await assertRevert(this.token.transferPresaleToken(ANOTHER_ACCOUNT, constants.LARGER_THAN_TOTAL));
 
     })
 
     it('Plural seed with unequal input arrays', async function(){
         const accounts = [ANOTHER_ACCOUNT, ANOTHER_ACCOUNT2, NEW_OWNER];
-        await assertRevert(this.token.transferSeedTokenMany(accounts, TOKENS));
+        await assertRevert(this.token.transferPresaleTokenMany(accounts, TOKENS));
     })
 
     it('Plural seed with correct input arrays', async function(){

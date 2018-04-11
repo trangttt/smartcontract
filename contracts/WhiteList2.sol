@@ -14,9 +14,9 @@ contract WhiteList2 {
         ShareToken shrToken = ShareToken(shrTokenAddr);
 
         wlm.set(0x22D6EAf11803E99ca90603cAC1D50BA47c96a210);
-        shrToken.transferSeedToken(0x22D6EAf11803E99ca90603cAC1D50BA47c96a210, 100 * E2);
+        shrToken.transferPresaleToken(0x22D6EAf11803E99ca90603cAC1D50BA47c96a210, 100 * E2);
 
         wlm.set(0xc72a04134095273d5bFf6f6651e9b1F9251451DE);
-        shrToken.transferSeedToken(0xc72a04134095273d5bFf6f6651e9b1F9251451DE, 200 * E2);
+        shrToken.transferPresaleToken(0xc72a04134095273d5bFf6f6651e9b1F9251451DE, 200 * E2);
     }
 }

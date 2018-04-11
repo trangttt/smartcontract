@@ -3,14 +3,11 @@ pragma solidity ^0.4.21;
 import "./oraclizeAPI_0.5.sol";
 import "./Owned.sol";
 import "./SafeMath.sol";
-import "./WhiteListManager.sol";
 import "./ShareToken.sol";
 
 contract MainSale is Owned, usingOraclize {
     
     using SafeMath for uint;
-
-    WhiteListManager public whitelistManager;
 
     ShareToken public shrToken;
 
@@ -18,7 +15,7 @@ contract MainSale is Owned, usingOraclize {
     uint constant E2 = 10**2;
 
     // Will be set to true only if WhiteList contracts are created
-    bool public isIcoRunning = false;
+    bool public isIcoRunning = true;
     
     bool public isUpdateRateRunning = true;
 
@@ -49,7 +46,7 @@ contract MainSale is Owned, usingOraclize {
         require (isIcoRunning);
 
         // Only whitelisted address can buy tokens. Otherwise, refund
-        require (whitelistManager.isWhitelisted(msg.sender));
+        require (shrToken.isWhitelist(msg.sender));
 
         if (isUpdateRateRunning == false) {
             
@@ -97,24 +94,6 @@ contract MainSale is Owned, usingOraclize {
         require(msg.sender == owner);
         _to.transfer(this.balance);
     }
-
-    function setWhiteListManager(address _whitelistManager) onlyOwner {
-
-        whitelistManager = WhiteListManager(_whitelistManager);
-
-        // Enable ICO
-        isIcoRunning = true;
-    }
-
-    /*
-    function setWhiteListMany(address[] addrList) onlyOwner {
-
-        for (uint i = 0; i < addrList.length; i++) {
-
-            whiteList.push(WhiteList(addrList[i]));
-        }
-    }
-    */
 
     function setEthUsdRateInCent(uint _ethUsdRateInCent) onlyOwner {
         

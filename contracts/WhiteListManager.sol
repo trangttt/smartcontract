@@ -4,10 +4,10 @@ import "./Owned.sol";
 
 contract WhiteListManager is Owned {
 
-    // The list here will be upated by multiple separate WhiteList contracts
+    // The list here will be updated by multiple separate WhiteList contracts
     mapping (address => bool) public list;
 
-    bool public setWhitelistEnabled = false;
+    bool public setWhitelistEnabled = true;
 
     function WhiteListManager() public {
 
