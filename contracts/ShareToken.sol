@@ -137,23 +137,18 @@ contract ShareToken is ERC20Token, Owned {
         return super.transferFrom(_from, _to, _amount);
     }
 
-<<<<<<< Updated upstream
-    function setIcoContract(address _icoContract) onlyOwner {
-||||||| merged common ancestors
-    function unLock(address _participant) onlyOwner {
+    function unLock(address _participant) public onlyOwner {
 
         locked[_participant] = false;
     }
 
-    function unLockMultiple(address[] _participants) onlyOwner {
+    function unLockMultiple(address[] _participants) public onlyOwner {
 
         for (uint i = 0; i < _participants.length; i++) {
             locked[_participants[i]] = false;
         }
     }
 
-    function setIcoContract(address _icoContract) onlyOwner {
-=======
     function unLock(address _participant) public onlyOwner {
 
         locked[_participant] = false;
@@ -167,8 +162,6 @@ contract ShareToken is ERC20Token, Owned {
     }
 
     function setIcoContract(address _icoContract) public onlyOwner {
->>>>>>> Stashed changes
-        
         if (_icoContract != address(0)) {
 
             icoContract = _icoContract;
@@ -244,13 +237,7 @@ contract ShareToken is ERC20Token, Owned {
         transferPresaleEnabled = false;   
     }
 
-<<<<<<< Updated upstream
-    function transferPresaleToken(address _to, uint _amount) {
-||||||| merged common ancestors
-    function transferSeedToken(address _to, uint _amount) {
-=======
     function transferSeedToken(address _to, uint _amount) public {
->>>>>>> Stashed changes
 
         require(transferPresaleEnabled);
         require(_amount > 0);
@@ -272,13 +259,13 @@ contract ShareToken is ERC20Token, Owned {
         Transfer(address(0x0), _to, _amount);
     }
 
-    function transferPresaleTokenMany(address[] addrList, uint[] amountList) {
+    function transferSeedTokenMany(address[] addrList, uint[] amountList) {
 
         require(addrList.length == amountList.length);
 
         for (uint i = 0; i < addrList.length; i++) {
 
-            transferPresaleToken(addrList[i], amountList[i]);
+            transferSeedToken(addrList[i], amountList[i]);
         }
     }
 }

@@ -9,6 +9,8 @@ contract MainSale is Owned, usingOraclize {
     
     using SafeMath for uint;
 
+    event Value(uint index, uint value);
+
     WhiteListManager public whitelistManager;
 
     ShareToken public shrToken;
