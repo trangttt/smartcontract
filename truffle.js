@@ -1,9 +1,9 @@
+require("babel-register");
+require("babel-polyfill");
+
 var HDWalletProvider = require("truffle-hdwallet-provider");
-// var HDWalletAccounts = require("hdwallet-accounts");
 
 var mnemonic = "become manage bind life remove tiger grief between smile enlist settle message";
-// let walletAccounts = HDWalletAccounts(10, web3.currentProvider.mnemonic);
-// let walletAccounts = HDWalletAccounts(10, mnemonic)
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
@@ -33,8 +33,9 @@ module.exports = {
             return new HDWalletProvider( mnemonic, 'https://rinkeby.infura.io/KD0tyiBLlHULRInWEMaJ', 0)
         },
         network_id: 4,
-        gas: 6712388,
-        gasPrice: 1000000000 
+        gas: 7056310,
+        //gas: 6712388,
+        gasPrice: 20000000000
     }
   }
 };
