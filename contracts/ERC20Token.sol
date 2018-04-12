@@ -22,10 +22,21 @@ contract ERC20Token is ERC20Interface {
         return balances[_owner];
     }
 
+    /* Check whether an address is a contract address */
+    function isContract(address addr) internal view returns (bool) {
+        uint size;
+        assembly { size := extcodesize(addr) }
+        return size > 0;
+    }
+
+
     /* Transfer the balance from owner's account to another account */
     function transfer(address _to, uint _amount) public returns (bool success) {
         // amount sent cannot exceed balance
         require(balances[msg.sender] >= _amount);
+
+        // Do not allow to transfer token to contract address to avoid tokens getting stuck
+        require(isContract(_to) == false);
 
         // update balances
         balances[msg.sender] = balances[msg.sender].sub(_amount);
@@ -35,11 +46,15 @@ contract ERC20Token is ERC20Interface {
         emit Transfer(msg.sender, _to, _amount);
         return true;
     }
+    
 
     /* Allow _spender to withdraw from your account up to _amount */
     function approve(address _spender, uint _amount) public returns (bool success) {
         // approval amount cannot exceed the balance
-        require (balances[msg.sender] >= _amount);
+        require(balances[msg.sender] >= _amount);
+
+        // Only allow contract address
+        require(isContract(_spender));
 
         // update allowed amount
         allowed[msg.sender][_spender] = _amount;
