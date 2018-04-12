@@ -1,3 +1,19 @@
+# Instruction
+
+## Installation
+
+npm install
+
+## Run test
+
+npm test <test_file>
+
+## Feed presale data
+
+* npm run testrpc
+* npm run rinkeby
+* npm run mainnet
+
 # MainSale Contracts Testcases
 
 The contracts are tested using [Truffle Framework](http://truffleframework.com/docs/getting_started/) under TestRPC.
