@@ -125,19 +125,6 @@ contract ShareToken is ERC20Token, WhiteListManager {
         return super.transferFrom(_from, _to, _amount);
     }
 
-    function unLock(address _participant) public onlyOwner {
-
-        rewardTokenLocked[_participant] = false;
-    }
-
-    function unLockMultiple(address[] _participants) public onlyOwner {
-
-        for (uint i = 0; i < _participants.length; i++) {
-            rewardTokenLocked[_participants[i]] = false;
-        }
-    }
-
-
     function setIcoContract(address _icoContract) public onlyOwner {
         if (_icoContract != address(0)) {
 

@@ -67,7 +67,11 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
         await bounty(this.token, ANOTHER_ACCOUNT, constants.TEST_BALANCE);
 
         //unlock
-        const tx = await this.token.unLock(ANOTHER_ACCOUNT);
+        const tx = await this.token.unlockRewardToken(ANOTHER_ACCOUNT);
+
+        // unlock Mainsale
+        const tx1 = await this.token.unlockMainSaleToken();
+
         await expectTxEvent(this.token.transfer(NEW_OWNER, constants.TEST_BALANCE,
                                         {from: ANOTHER_ACCOUNT}),
                             "Transfer");

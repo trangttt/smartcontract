@@ -21,18 +21,18 @@ var expectLogEvent = expectEvent.inLog
 var assertRevert = assertRevert.assertRevert
 
 var seedSingular = async function(contract, account, tokens){
-    return await expectTxEvent(contract.transferPresaleToken(account, tokens), "Transfer");
+    return await expectTxEvent(contract.handlePresaleToken(account, tokens), "Transfer");
 }
 var seedPlural = async function(contract, accounts, tokens) {
-    return await expectTxEvent(contract.transferPresaleTokenMany(accounts, tokens), "Transfer");
+    return await expectTxEvent(contract.handlePresaleTokenMany(accounts, tokens), "Transfer");
 }
 
 var presaleSingular = async function(contract, account, tokens){
-    return await expectTxEvent(contract.transferPresaleToken(account, tokens), "Transfer")
+    return await expectTxEvent(contract.handlePresaleToken(account, tokens), "Transfer")
 }
 
 var presalePlural = async function(contract, accounts, tokens){
-    return await expectTxEvent(contract.transferPresaleTokenMany(accounts, tokens), "Transfer")
+    return await expectTxEvent(contract.handlePresaleTokenMany(accounts, tokens), "Transfer")
 }
 
 //*****************************************************************************************
@@ -49,8 +49,8 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT, 
     TOKENS = [constants.TEST_BALANCE, constants.TEST_BALANCE];
 
     beforeEach(async function () {
-        this.whitelist = await Whitelist.new();
-       this.token = await ShareToken.new(this.whitelist.address);
+        // this.whitelist = await Whitelist.new();
+       this.token = await ShareToken.new();
     });
 
     
@@ -85,22 +85,22 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT, 
     })
 
     it('Presale a negative number of tokens should revert', async function(){
-        await assertRevert(this.token.transferPresaleToken(ANOTHER_ACCOUNT, -1 * constants.TEST_BALANCE));
+        await assertRevert(this.token.handlePresaleToken(ANOTHER_ACCOUNT, -1 * constants.TEST_BALANCE));
     })
 
 
     it('Presale with an absurdly large amount of tokens should revert', async function(){
-        await assertRevert(this.token.transferPresaleToken(ANOTHER_ACCOUNT, constants.LARGER_THAN_TOTAL));
+        await assertRevert(this.token.handlePresaleToken(ANOTHER_ACCOUNT, constants.LARGER_THAN_TOTAL));
 
     })
 
     it('Plural seed with unequal input arrays', async function(){
         const accounts = [ANOTHER_ACCOUNT, ANOTHER_ACCOUNT2, NEW_OWNER];
-        await assertRevert(this.token.transferPresaleTokenMany(accounts, TOKENS));
+        await assertRevert(this.token.handlePresaleTokenMany(accounts, TOKENS));
     })
 
     it('Plural seed with correct input arrays', async function(){
-        await this.token.transferPresaleTokenMany(ACCOUNTS, TOKENS);
+        await this.token.handlePresaleTokenMany(ACCOUNTS, TOKENS);
         for (var i=0; i < ACCOUNTS.length; i++){
             const balanceAfter = await getBalance(this.token, ACCOUNTS[i])
             assert.equal(balanceAfter, TOKENS[i])

@@ -9,10 +9,6 @@ contract MainSale is Owned, usingOraclize {
     
     using SafeMath for uint;
 
-    event Value(uint index, uint value);
-
-    WhiteListManager public whitelistManager;
-
     ShareToken public shrToken;
 
     // Any token amount must be multiplied by this const to reflect decimals
@@ -59,10 +55,11 @@ contract MainSale is Owned, usingOraclize {
         uint tokens = 0;
 
         // Calc the transferred amount in cents (msg.value is in wei and thus divided by 10^18 to get ETH)
-        uint transferredAmount = msg.value.mul(ethUsdRateInCent).div(10**18);
+        // uint transferredAmount = msg.value.mul(ethUsdRateInCent).div(10**18);
 
         // Calc the token amount
-        tokens = transferredAmount.div(tokenPriceInCent) * E2;
+        // tokens = transferredAmount.div(tokenPriceInCent) * E2;
+        tokens = msg.value.mul(ethUsdRateInCent).mul(E2).div(tokenPriceInCent).div(10**18);
 
         uint totalIssuedTokens = shrToken.totalMainSaleTokenIssued();
 

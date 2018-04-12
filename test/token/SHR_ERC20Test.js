@@ -26,24 +26,16 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
     console.log("ANOTHER ACCOUNT:", ANOTHER_ACCOUNT);
 
     beforeEach(async function () {
-       this.whitelist = await Whitelist.new();
-       this.token = await ShareToken.new(this.whitelist.address);
+    //    this.whitelist = await Whitelist.new();
+       this.token = await ShareToken.new();
 
        this.mainsale = await MainSale.new(constants.ETH_USD_RATE, this.token.address);
 
        // set ico
        await this.token.setIcoContract(this.mainsale.address);
 
-       // deploy Whitelist
-
-       // set whitelist to mainsale
-    //    this.mainsale.setWhiteListManager(this.whitelist.address);
-
-       // enable whitelist
-    //    await this.whitelist.enableSetWhitelist();
-
        for (var i=0; i < accounts.length; i++){
-           await this.whitelist.set(accounts[i]);
+           await this.token.set(accounts[i]);
        }
 
     });
@@ -136,7 +128,7 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
         const tx1 = await this.token.unlockMainSaleToken();
 
         // Unlock 
-        const tx2 = await this.token.unLock(ANOTHER_ACCOUNT);
+        const tx2 = await this.token.unlockRewardToken(ANOTHER_ACCOUNT);
 
         // Transfer
         const tx3 = await this.token.transfer(NEW_OWNER, constants.TEST_BALANCE, {from: ANOTHER_ACCOUNT})
@@ -173,8 +165,8 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
                                             {from: ANOTHER_ACCOUNT})
 
         // unLock so tokens are transferable
-        await this.token.unLock(ANOTHER_ACCOUNT);
-        await this.token.unLock(OWNER);
+        await this.token.unlockRewardToken(ANOTHER_ACCOUNT);
+        await this.token.unlockRewardToken(OWNER);
 
         await assertRevert.assertRevert(this.token.transferFrom(ANOTHER_ACCOUNT, 
                                                                 NEW_OWNER,
@@ -193,8 +185,8 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
         await this.token.unlockMainSaleToken();
 
         // unLock so tokens are transferable
-        await this.token.unLock(ANOTHER_ACCOUNT);
-        await this.token.unLock(OWNER);
+        await this.token.unlockRewardToken(ANOTHER_ACCOUNT);
+        await this.token.unlockRewardToken(OWNER);
 
         // transfer from ANOTHER_ACCOUNT, using OWNER BALANCE should work
         const tx = await this.token.transferFrom(OWNER, NEW_OWNER, constants.TEST_BALANCE, 
