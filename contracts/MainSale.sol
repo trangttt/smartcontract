@@ -49,8 +49,8 @@ contract MainSale is Owned, usingOraclize {
 
         if (isUpdateRateRunning == false) {
             
-             updateRate();
-         }
+            updateRate();
+        }
         
         uint tokens = 0;
 
@@ -133,9 +133,7 @@ contract MainSale is Owned, usingOraclize {
         }
     }
 
-    function updateRate() public payable {
-        
-        require(msg.sender == owner);
+    function updateRate() public payable onlyOwner {
 
         if (oraclize_getPrice("URL") <= address(this).balance) {
             // Get rate with delay
