@@ -6,7 +6,7 @@ import "./SafeMath.sol";
 import "./ERC20Token.sol";
 import "./WhiteListManager.sol";
 
-contract ShareToken is ERC20Token, Owned {
+contract ShareToken is ERC20Token, WhiteListManager {
 
     using SafeMath for uint;
 
@@ -16,16 +16,11 @@ contract ShareToken is ERC20Token, Owned {
 
     address public icoContract;
 
-    bool public transferPresaleEnabled = true;
-
     // Any token amount must be multiplied by this const to reflect decimals
     uint constant E2 = 10**2;
 
     mapping(address => bool) public rewardTokenLocked;
     bool public mainSaleTokenLocked = true;
-
-    // We need the WhiteListManager to check if addr is in the whitelist
-    WhiteListManager wlm;
 
     uint public constant TOKEN_SUPPLY_AIRDROP_LIMIT  = 6666666667; // 66,666,666.67 tokens (0.066 billion)
     uint public constant TOKEN_SUPPLY_BOUNTY_LIMIT   = 33333333333; // 333,333,333.33 tokens (0.333 billion)
@@ -38,15 +33,13 @@ contract ShareToken is ERC20Token, Owned {
 
     uint public seedAndPresaleTokenIssuedTotal;
 
-    function ShareToken(address whitelistManagerAddr) public {
+    function ShareToken() public {
 
         totalTokenIssued = 0;
         airDropTokenIssuedTotal = 0;
         bountyTokenIssuedTotal = 0;
         seedAndPresaleTokenIssuedTotal = 0;
         mainSaleTokenLocked = true;
-
-        wlm = WhiteListManager(whitelistManagerAddr);
     }
 
     function unlockMainSaleToken() public onlyOwner {
@@ -73,9 +66,18 @@ contract ShareToken is ERC20Token, Owned {
         }
     }
 
-    function isWhitelist(address addr) returns (bool) {
+    function lockRewardToken(address addr) public onlyOwner {
 
-        return wlm.isWhitelisted(addr);
+        require(addr != address(0));
+        rewardTokenLocked[addr] = true;
+    }
+
+    function lockRewardTokenMany(address[] addrList) public onlyOwner {
+
+        for (uint i = 0; i < addrList.length; i++) {
+
+            lockRewardToken(addrList[i]);
+        }
     }
 
     // Check if a given address is locked. The address can be in the whitelist or in the reward
@@ -87,7 +89,7 @@ contract ShareToken is ERC20Token, Owned {
         } else {
 
             // Main sale is ended and thus any whitelist addr is unlocked
-            if (isWhitelist(addr)) {
+            if (isWhitelisted(addr)) {
                 return false;
             } else {
                 // If the addr is in the reward, it must be checked if locked
@@ -202,19 +204,8 @@ contract ShareToken is ERC20Token, Owned {
         Transfer(address(0x0), _to, _amount);
     }
 
-    function enableTransferPresale() public onlyOwner {
+    function handlePresaleToken(address _to, uint _amount) onlyOwner {
 
-        transferPresaleEnabled = true;   
-    }
-
-    function disableTransferPresale() public onlyOwner {
-
-        transferPresaleEnabled = false;   
-    }
-
-    function transferPresaleToken(address _to, uint _amount) public {
-
-        require(transferPresaleEnabled);
         require(_amount > 0);
 
         uint seedAndPresaleTokenLimit = TOKEN_SUPPLY_SEED_LIMIT + TOKEN_SUPPLY_PRESALE_LIMIT;
@@ -229,18 +220,19 @@ contract ShareToken is ERC20Token, Owned {
         // Update total amount of tokens issued
         seedAndPresaleTokenIssuedTotal = seedAndPresaleTokenIssuedTotal.add(_amount);
 
-        // Do not lock the seed
-
         Transfer(address(0x0), _to, _amount);
+
+        // Also add to whitelist
+        set(_to);
     }
 
-    function transferPresaleTokenMany(address[] addrList, uint[] amountList) {
+    function handlePresaleTokenMany(address[] addrList, uint[] amountList) onlyOwner {
 
         require(addrList.length == amountList.length);
 
         for (uint i = 0; i < addrList.length; i++) {
 
-            transferPresaleToken(addrList[i], amountList[i]);
+            handlePresaleToken(addrList[i], amountList[i]);
         }
     }
 }

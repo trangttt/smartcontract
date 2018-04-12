@@ -49,7 +49,7 @@ contract MainSale is Owned, usingOraclize {
         require (isIcoRunning);
 
         // Only whitelisted address can buy tokens. Otherwise, refund
-        require (shrToken.isWhitelist(msg.sender));
+        require (shrToken.isWhitelisted(msg.sender));
 
         // if (isUpdateRateRunning == false) {
             
@@ -86,15 +86,13 @@ contract MainSale is Owned, usingOraclize {
         shrToken.sell(msg.sender, tokens);
     }
 
-    function withdrawToOwner() payable {
+    function withdrawToOwner() onlyOwner {
 
-        require(msg.sender == owner);
         owner.transfer(this.balance);
     }
 
-    function withdrawTo(address _to) payable {
+    function withdrawTo(address _to) onlyOwner {
 
-        require(msg.sender == owner);
         _to.transfer(this.balance);
     }
 
