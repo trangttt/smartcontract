@@ -2,9 +2,9 @@ var Global = function () {}
 
 Global.globalize = function () {
 
-    global.OWNER_ADDR = '0x22d6eaf11803e99ca90603cac1d50ba47c96a210';
-    global.PRIV_KEY = 'bc20b268694c66e8d506c6dfdc9a90fdeb9d668104b19cc1ddc8bd3a16f52dbd';
-    global.SHARE_TOKEN_CONTRACT_ADDR = '0xedd07cafaaaa3370f756da6d1463c247177b50b2';
+    global.OWNER_ADDR = "0x175FeA8857f7581B971C5a41F27Ea4BB43356298";
+    global.PRIV_KEY = "c548e41cdc3f372995820c3d52fc470b2b380e1bce2a86be017b50e2f2fe82ee";
+    global.SHARE_TOKEN_CONTRACT_ADDR = "0x30bbcd8f3b12a2b75677fb434e33ea2fe42b6199";
 
     // Reference to the deployed contract via its address
     var ShrToken = artifacts.require('./ShareToken.sol');
