@@ -12,9 +12,9 @@ const UNLOCK_ERROR = 'Cannot unlock account.';
 const GASPRICE_ERROR = 'Cannot get gasPrice.';
 const NONCE_ERROR = 'Cannot get nonce.';
 
-var gasPrace;
+var shrTokenContractAddr = "0xaa1976ffd82ea38244e532f520790b987608f436";
 
-ShareToken.deployed().
+ShareToken.at(shrTokenContractAddr).
     then(function(instance){
         SHRContract = instance;
         console.log("ShareToken: ", SHRContract.address);
