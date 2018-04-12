@@ -6,9 +6,16 @@ var request = require('request');
  */
 var Utils = function () {}
 
-Utils.unlock = function (address, password) {
+Utils.unlock = function (address, password, callback) {
+    console.log('unlock - addr: ' + address + ', password: ' + password);
     web3.personal.unlockAccount(address, password, function (er, re) {
-        return er;
+        if (!er) {
+            return callback(true);
+        }
+        else {
+            console.log('unlock failed, err: ' + er);
+            return callback(false);
+        } 
     });
 }
 
@@ -55,21 +62,29 @@ Utils.sortArray = function (array, key, decrease) {
     });
 }
 
-Utils.getGasPrice = function () {
-    try {
-        return (web3.eth.gasPrice.toString(10));
-    } catch (er) {
-        return (null);
-    }
+Utils.getGasPrice = function (callback) {
+    web3.eth.getGasPrice(function(error, result) { 
+        if (!error) {
+            console.log('Gas price: ' + result.toString(10));
+            return callback(result.toString(10));
+        } else {
+            console.log('getGasPrice failed');
+            return callback(null);
+        }
+    });
 }
 
-Utils.getNonce = function (address, status) {
-    try {
-        var actualStatus = status || 'latest';
-        return web3.eth.getTransactionCount(address, actualStatus);
-    } catch (er) {
-        return null;
-    }
+Utils.getNonce = function (address, status, callback) {
+    var actualStatus = status || 'latest';
+    web3.eth.getTransactionCount(address, actualStatus, function(error, result) {
+        if (!error) {
+            console.log('Nonce: ' + result);
+            return callback(result);
+        } else {
+            console.log('getNonce failed');
+            return callback(null);
+        }
+    });
 }
 
 Utils.getBlockNumber = function () {
