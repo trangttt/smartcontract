@@ -4,13 +4,11 @@ global.web3 = web3;
 var utils = require('./utils');
 
 require('./global').globalize();
+var dat = require('./data1');
 
 const UNLOCK_ERROR = 'Cannot unlock account.';
 const GASPRICE_ERROR = 'Cannot get gasPrice.';
 const NONCE_ERROR = 'Cannot get nonce.';
-
-var testAddr = '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb';
-var testAmount = 100;
 
 // Unlock the owner wallet address
 var er = utils.unlock(global.OWNER_ADDR, global.PRIV_KEY);
@@ -30,17 +28,17 @@ else {
             console.error(NONCE_ERROR);
         }
         else {
-            global.ShrTokenObj.handlePresaleToken(testAddr, testAmount, {
+            global.ShrTokenObj.handlePresaleTokenMany(dat.addrList, dat.tokenList, {
                 from: global.OWNER_ADDR,
                 gas: 2100000,
                 gasPrice: gasPrice,
                 nonce: nonce
             }, function (er, tx) {
                 if (er) {
-                    console.error('handlePresaleToken failed - err: ' + er);
+                    console.error('handlePresaleTokenMany failed - err: ' + er);
                 }
                 else {
-                    console.log('handlePresaleToken OK -  txId: ' + tx);
+                    console.log('handlePresaleTokenMany OK -  txId: ' + tx);
                 }
             })
         }
