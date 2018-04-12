@@ -5,6 +5,7 @@ import "./Owned.sol";
 import "./SafeMath.sol";
 import "./ShareToken.sol";
 
+
 contract MainSale is Owned, usingOraclize {
     
     using SafeMath for uint;
@@ -14,7 +15,6 @@ contract MainSale is Owned, usingOraclize {
     // Any token amount must be multiplied by this const to reflect decimals
     uint constant E2 = 10**2;
 
-    // Will be set to true only if WhiteList contracts are created
     bool public isIcoRunning = true;
     
     bool public isUpdateRateRunning = true;
@@ -37,7 +37,7 @@ contract MainSale is Owned, usingOraclize {
 
         shrToken = ShareToken(_tokenAddress);
 
-        //updateRate();
+        updateRate();
     }
 
     /* Allow whitelisted users to send ETH to token contract for buying tokens */
@@ -47,10 +47,10 @@ contract MainSale is Owned, usingOraclize {
         // Only whitelisted address can buy tokens. Otherwise, refund
         require (shrToken.isWhitelisted(msg.sender));
 
-        // if (isUpdateRateRunning == false) {
+        if (isUpdateRateRunning == false) {
             
-        //     updateRate();
-        // }
+             updateRate();
+         }
         
         uint tokens = 0;
 
@@ -59,6 +59,7 @@ contract MainSale is Owned, usingOraclize {
 
         // Calc the token amount
         // tokens = transferredAmount.div(tokenPriceInCent) * E2;
+
         tokens = msg.value.mul(ethUsdRateInCent).mul(E2).div(tokenPriceInCent).div(10**18);
 
         uint totalIssuedTokens = shrToken.totalMainSaleTokenIssued();
@@ -68,7 +69,7 @@ contract MainSale is Owned, usingOraclize {
 
             uint tokensAvailable = TOKEN_SUPPLY_MAINSALE_LIMIT - totalIssuedTokens;
             uint tokensToRefund = tokens - tokensAvailable;
-            uint ethToRefundInWei = tokensToRefund.div(tokenPriceInCent).div(ethUsdRateInCent).mul(10**18);
+            uint ethToRefundInWei = tokensToRefund.mul(10**18).div(tokenPriceInCent).div(ethUsdRateInCent);
             
             // Refund
             msg.sender.transfer(ethToRefundInWei);
@@ -83,43 +84,43 @@ contract MainSale is Owned, usingOraclize {
         shrToken.sell(msg.sender, tokens);
     }
 
-    function withdrawToOwner() onlyOwner {
+    function withdrawToOwner() public onlyOwner {
 
-        owner.transfer(this.balance);
+        owner.transfer(address(this).balance);
     }
 
-    function withdrawTo(address _to) onlyOwner {
+    function withdrawTo(address _to) public onlyOwner {
 
-        _to.transfer(this.balance);
+        _to.transfer(address(this).balance);
     }
 
-    function setEthUsdRateInCent(uint _ethUsdRateInCent) onlyOwner {
+    function setEthUsdRateInCent(uint _ethUsdRateInCent) public onlyOwner {
         
         ethUsdRateInCent = _ethUsdRateInCent; // "_ethUsdRateInCent"
     }
 
     /* Transfer out any accidentally sent ERC20 tokens */
-    function transferAnyERC20Token(address tokenAddress, uint amount) onlyOwner returns (bool success) {
+    function transferAnyERC20Token(address tokenAddress, uint amount) public onlyOwner returns (bool success) {
 
         return ERC20Interface(tokenAddress).transfer(owner, amount);
     }
 
-    function stopICO() onlyOwner {
+    function stopICO() public onlyOwner {
 
         isIcoRunning = false;
     }
 
-    function startICO() onlyOwner {
+    function startICO() public onlyOwner {
 
         isIcoRunning = true;
     }
 
-    function remainingTokensForSale() constant returns (uint) {
+    function remainingTokensForSale() public view returns (uint) {
         
         return TOKEN_SUPPLY_MAINSALE_LIMIT.sub(shrToken.totalMainSaleTokenIssued());
     }
 
-    function __callback(bytes32 myid, string result) {
+    function __callback(bytes32 myid, string result) public {
         
         // Never use require right here. It won't work!
         if (msg.sender != oraclize_cbAddress()) throw;
@@ -132,11 +133,11 @@ contract MainSale is Owned, usingOraclize {
         }
     }
 
-    function updateRate() payable {
+    function updateRate() public payable {
         
         require(msg.sender == owner);
 
-        if (oraclize_getPrice("URL") <= this.balance) {
+        if (oraclize_getPrice("URL") <= address(this).balance) {
             // Get rate with delay
             oraclize_query(ETH_USD_UPDATE_PERIOD, "URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price");
             isUpdateRateRunning = true;

@@ -81,7 +81,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
     }
 
     // Check if a given address is locked. The address can be in the whitelist or in the reward
-    function isLocked(address addr) returns (bool) {
+    function isLocked(address addr) public returns (bool) {
 
         // Main sale is running, any addr is locked
         if (mainSaleTokenLocked) {
@@ -99,28 +99,28 @@ contract ShareToken is ERC20Token, WhiteListManager {
         }
     }
 
-    function totalSupply() public constant returns (uint) {
+    function totalSupply() public view returns (uint) {
 
         return (totalTokenIssued + seedAndPresaleTokenIssuedTotal + airDropTokenIssuedTotal + bountyTokenIssuedTotal);
     }
 
-    function totalMainSaleTokenIssued() public constant returns (uint) {
+    function totalMainSaleTokenIssued() public view returns (uint) {
 
         return totalTokenIssued;
     }
 
     function transfer(address _to, uint _amount) public returns (bool success) {
 
-        require( isLocked(msg.sender) == false );    
-        require( isLocked(_to) == false );
+        require(isLocked(msg.sender) == false);    
+        require(isLocked(_to) == false);
         
         return super.transfer(_to, _amount);
     }
 
     function transferFrom(address _from, address _to, uint _amount) public returns (bool success) {
         
-        require( isLocked(_from) == false );
-        require( isLocked(_to) == false );
+        require(isLocked(_from) == false);
+        require(isLocked(_to) == false);
 
         return super.transferFrom(_from, _to, _amount);
     }
@@ -144,7 +144,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
         // Update total amount of tokens issued
         totalTokenIssued = totalTokenIssued.add(tokens);
 
-        Transfer(address(0x0), buyer, tokens);
+        emit Transfer(address(0x0), buyer, tokens);
 
         return true;
     }
@@ -167,7 +167,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
         // Lock the receiver
         rewardTokenLocked[_to] = true;
 
-        Transfer(address(0x0), _to, _amount);
+        emit Transfer(address(0x0), _to, _amount);
     }
 
     function rewardBounty(address _to, uint _amount) public onlyOwner {
@@ -188,10 +188,10 @@ contract ShareToken is ERC20Token, WhiteListManager {
         // Lock the receiver
         rewardTokenLocked[_to] = true;
 
-        Transfer(address(0x0), _to, _amount);
+        emit Transfer(address(0x0), _to, _amount);
     }
 
-    function handlePresaleToken(address _to, uint _amount) onlyOwner {
+    function handlePresaleToken(address _to, uint _amount) public onlyOwner {
 
         require(_amount > 0);
         _amount = _amount.mul(E2);
@@ -208,7 +208,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
         // Update total amount of tokens issued
         seedAndPresaleTokenIssuedTotal = seedAndPresaleTokenIssuedTotal.add(_amount);
 
-        Transfer(address(0x0), _to, _amount);
+        emit Transfer(address(0x0), _to, _amount);
 
         // Also add to whitelist
         set(_to);
