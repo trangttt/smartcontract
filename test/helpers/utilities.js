@@ -1,3 +1,4 @@
+var util = require('util');
 var constants = require('../config/ShareTokenFigures.js');
 /*
  * Get balance of an account
@@ -61,10 +62,18 @@ var approvalString = function(event){
             "Value: " + args._value.toNumber()].join(", ")
 }
 
-var getWeiBalance = async (address) => {
-    var res = await web3.eth.getBalance(address)
-    console.log("Get weiBalance", res.toNumber());
-    return res.toNumber();
+var getWeiBalance = function(address){
+    return web3.eth.getBalance(address).toNumber();
+}
+
+
+var sendTransaction = async function(data){
+    var _sendTransaction = await util.promisify((o, cb) => web3.eth.sendTransaction(o, cb));
+    var txHash = await _sendTransaction(data);
+
+    var _getTransaction = await util.promisify((th, cb) => web3.eth.getTransaction(th, cb));
+    var tx = await _getTransaction(txHash);
+    return tx
 }
 
 module.exports = {
@@ -74,5 +83,6 @@ module.exports = {
     approvalString,
     toWei,
     toToken,
-    getWeiBalance
+    getWeiBalance,
+    sendTransaction
 }

@@ -2,6 +2,7 @@ var assertRevert = require('../helpers/assertRevert.js');
 var expectEvent = require('../helpers/expectEvent.js');
 var utilities = require('../helpers/utilities.js');
 var constants = require('../config/ShareTokenFigures.js');
+var util = require('util');
 
 const ShareToken = artifacts.require('ShareToken');
 const MainSale = artifacts.require('MainSale');
@@ -49,6 +50,10 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
        }
     });
 
+    //*****************************************************************************************
+    //                         MAINSALE TESTCASES
+    //*****************************************************************************************
+
     it('Total issued mainsale token should be initially 0', async function(){
         var res = await this.token.totalMainSaleTokenIssued();
         assert.equal(res, 0);
@@ -56,7 +61,6 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
 
     it('Total remaining mainsale token should be intially cap value', async function(){
         var res = await this.mainsale.remainingTokensForSale();
-        console.log("RemainingToken", res)
 
         assert.equal(res.toNumber(), constants.TOTAL_MAINSALE);
     })
@@ -77,24 +81,58 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
         await assertRevert(this.mainsale.withdrawToOwner({from: ANOTHER_ACCOUNT}));
     })
 
+    it('Only owner can withdraw to another address', async function(){
+        await assertRevert(this.mainsale.withdrawTo(NEW_OWNER, {from: ANOTHER_ACCOUNT}));
+    })
 
     it('Withdraw the correct amount', async function(){
+
         // send some value
-        this.mainsale.sendTransaction({from: ANOTHER_ACCOUNT, value: toWei(constants.TEST_BALANCE)});
+        var tokenBalance = await sellToAccount(this.token, this.mainsale, ANOTHER_ACCOUNT, constants.TEST_BALANCE);
+        assert.equal(tokenBalance, constants.TEST_BALANCE);
 
-
+        // check balance
+        const balanceBefore = getWeiBalance(this.mainsale.address);
+        const ownerBalanceBefore = getWeiBalance(OWNER);
         
-        // check balance
-        const balanceBefore = await getWeiBalance(this.mainsale.address);
-
+        // withdraw
         const tx = await this.mainsale.withdrawToOwner();
+        const gasPrice = web3.eth.gasPrice.toNumber();
 
         // check balance
-        const balanceAfter = await getWeiBalance(this.mainsale.address);
+        const balanceAfter = getWeiBalance(this.mainsale.address);
+        const ownerBalanceAfter = getWeiBalance(OWNER);
 
-        assert.equal(balanceAfter, 0);
+
         assert.equal(balanceBefore, toWei(constants.TEST_BALANCE));
-
+        assert.equal(balanceAfter, 0);
+        assert.isAbove(ownerBalanceBefore + toWei(constants.TEST_BALANCE) - tx.receipt.gasUsed * gasPrice,
+                       ownerBalanceAfter,
+                       "After withdrawToOwner, balance of Owner be larger than before");
     })
+
+
+    it('Check transaction', async function(){
+
+        const before = getWeiBalance(OWNER);
+
+        const data = {from: OWNER,
+                      to  : NEW_OWNER,
+                      value: web3.toWei(1, "ether")};
+
+        const tx = await utilities.sendTransaction(data);
+        console.log(tx);
+        console.log(tx.gasPrice.toNumber(), web3.eth.gasPrice.toNumber());
+
+        const after = getWeiBalance(OWNER);
+
+        const expected1 = before - web3.toWei(1, "ether") - tx.gas * tx.gasPrice.toNumber();
+        const expected2 = before - web3.toWei(1, "ether") - tx.gas * web3.eth.gasPrice.toNumber();
+        console.log(after - expected1)
+        console.log(after - expected2)
+
+        assert.equal(after, expected1);
+    })
+
        
 });

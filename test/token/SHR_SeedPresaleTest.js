@@ -61,7 +61,9 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT, 
     it('Transfer presale, account balance should be updated.', async function(){
         await presaleSingular(this.token, ANOTHER_ACCOUNT, constants.TEST_BALANCE);
         const balanceAfter = await getBalance(this.token, ANOTHER_ACCOUNT);
-        assert.equal(balanceAfter, constants.TEST_BALANCE);
+
+        // handlePresaleToken multiply token with 100 
+        assert.equal(balanceAfter, constants.TEST_BALANCE * constants.DECIMAL_PLACES);
     })
 
     it('Transfer presale, totalSupply shoud reflect', async function(){
