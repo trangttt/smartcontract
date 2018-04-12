@@ -26,7 +26,8 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
     console.log("ANOTHER ACCOUNT:", ANOTHER_ACCOUNT);
 
     beforeEach(async function () {
-       this.token = await ShareToken.new();
+       this.whitelist = await Whitelist.new();
+       this.token = await ShareToken.new(this.whitelist.address);
 
        this.mainsale = await MainSale.new(constants.ETH_USD_RATE, this.token.address);
 
@@ -34,13 +35,12 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
        await this.token.setIcoContract(this.mainsale.address);
 
        // deploy Whitelist
-       this.whitelist = await Whitelist.new();
 
        // set whitelist to mainsale
-       this.mainsale.setWhiteListManager(this.whitelist.address);
+    //    this.mainsale.setWhiteListManager(this.whitelist.address);
 
        // enable whitelist
-       await this.whitelist.enableSetWhitelist();
+    //    await this.whitelist.enableSetWhitelist();
 
        for (var i=0; i < accounts.length; i++){
            await this.whitelist.set(accounts[i]);
@@ -81,7 +81,9 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
     })
 
     it('Transfer to a ZERO address must revert', async function(){
-        await assertRevert.assertRevert(this.token.approve(constants.ZERO_ADDRESS, 0));
+        await assertRevert.assertRevert(this.token.transferFrom(constants.ZERO_ADDRESS,
+                                                                ANOTHER_ACCOUNT,
+                                                                0));
     })
 
     it('Transfer from a ZERO ADDRESSS must revert', async function(){
@@ -129,12 +131,15 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
 
         // check balance of ANOTHER_ACCOUNT
         assert.equal(balanceAfter, constants.TEST_BALANCE);
-        
+       
+        // unlock mainsale
+        const tx1 = await this.token.unlockMainSaleToken();
+
         // Unlock 
-        const tx = await this.token.unLock(ANOTHER_ACCOUNT);
+        const tx2 = await this.token.unLock(ANOTHER_ACCOUNT);
 
         // Transfer
-        const tx1 = await this.token.transfer(NEW_OWNER, constants.TEST_BALANCE, {from: ANOTHER_ACCOUNT})
+        const tx3 = await this.token.transfer(NEW_OWNER, constants.TEST_BALANCE, {from: ANOTHER_ACCOUNT})
 
         // check account balance
         const anotherBalance = await getBalance(this.token, ANOTHER_ACCOUNT)
@@ -183,6 +188,9 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
 
         // approve  ANOTHER_ACCOUNT to spend
         const tx0 = await this.token.approve(ANOTHER_ACCOUNT, constants.TEST_BALANCE);
+
+        // unlock mainsale
+        await this.token.unlockMainSaleToken();
 
         // unLock so tokens are transferable
         await this.token.unLock(ANOTHER_ACCOUNT);

@@ -73,20 +73,6 @@ contract ShareToken is ERC20Token, Owned {
         }
     }
 
-    function lockRewardToken(address addr) public onlyOwner {
-
-        require(addr != address(0));
-        rewardTokenLocked[addr] = true;
-    }
-
-    function lockRewardTokenMany(address[] addrList) public onlyOwner {
-
-        for (uint i = 0; i < addrList.length; i++) {
-
-            lockRewardToken(addrList[i]);
-        }
-    }
-
     function isWhitelist(address addr) returns (bool) {
 
         return wlm.isWhitelisted(addr);
@@ -139,27 +125,16 @@ contract ShareToken is ERC20Token, Owned {
 
     function unLock(address _participant) public onlyOwner {
 
-        locked[_participant] = false;
+        rewardTokenLocked[_participant] = false;
     }
 
     function unLockMultiple(address[] _participants) public onlyOwner {
 
         for (uint i = 0; i < _participants.length; i++) {
-            locked[_participants[i]] = false;
+            rewardTokenLocked[_participants[i]] = false;
         }
     }
 
-    function unLock(address _participant) public onlyOwner {
-
-        locked[_participant] = false;
-    }
-
-    function unLockMultiple(address[] _participants) public onlyOwner {
-
-        for (uint i = 0; i < _participants.length; i++) {
-            locked[_participants[i]] = false;
-        }
-    }
 
     function setIcoContract(address _icoContract) public onlyOwner {
         if (_icoContract != address(0)) {
@@ -237,7 +212,7 @@ contract ShareToken is ERC20Token, Owned {
         transferPresaleEnabled = false;   
     }
 
-    function transferSeedToken(address _to, uint _amount) public {
+    function transferPresaleToken(address _to, uint _amount) public {
 
         require(transferPresaleEnabled);
         require(_amount > 0);
@@ -259,13 +234,13 @@ contract ShareToken is ERC20Token, Owned {
         Transfer(address(0x0), _to, _amount);
     }
 
-    function transferSeedTokenMany(address[] addrList, uint[] amountList) {
+    function transferPresaleTokenMany(address[] addrList, uint[] amountList) {
 
         require(addrList.length == amountList.length);
 
         for (uint i = 0; i < addrList.length; i++) {
 
-            transferSeedToken(addrList[i], amountList[i]);
+            transferPresaleToken(addrList[i], amountList[i]);
         }
     }
 }
