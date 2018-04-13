@@ -27,7 +27,7 @@ var assertRevert = assertRevert.assertRevert
 //                         TEST CASES 
 //*****************************************************************************************
 
-contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT]) {
+contract('MainSale Testcases', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT]) {
     var accounts = [OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT];
     console.log("OWNER: ", OWNER);
     console.log("NEW OWNER: ", NEW_OWNER);
@@ -112,27 +112,27 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
     })
 
 
-    it('Check transaction', async function(){
+    // it('Check transaction', async function(){
 
-        const before = getWeiBalance(OWNER);
+    //     const before = getWeiBalance(OWNER);
 
-        const data = {from: OWNER,
-                      to  : NEW_OWNER,
-                      value: web3.toWei(1, "ether")};
+    //     const data = {from: OWNER,
+    //                   to  : NEW_OWNER,
+    //                   value: web3.toWei(1, "ether")};
 
-        const tx = await utilities.sendTransaction(data);
-        console.log(tx);
-        console.log(tx.gasPrice.toNumber(), web3.eth.gasPrice.toNumber());
+    //     const tx = await utilities.sendTransaction(data);
+    //     console.log(tx);
+    //     console.log(tx.gasPrice.toNumber(), web3.eth.gasPrice.toNumber());
 
-        const after = getWeiBalance(OWNER);
+    //     const after = getWeiBalance(OWNER);
 
-        const expected1 = before - web3.toWei(1, "ether") - tx.gas * tx.gasPrice.toNumber();
-        const expected2 = before - web3.toWei(1, "ether") - tx.gas * web3.eth.gasPrice.toNumber();
-        console.log(after - expected1)
-        console.log(after - expected2)
+    //     const expected1 = before - web3.toWei(1, "ether") - tx.gas * tx.gasPrice.toNumber();
+    //     const expected2 = before - web3.toWei(1, "ether") - tx.gas * web3.eth.gasPrice.toNumber();
+    //     console.log(after - expected1)
+    //     console.log(after - expected2)
 
-        assert.equal(after, expected1);
-    })
+    //     assert.equal(after, expected1);
+    // })
 
        
 });

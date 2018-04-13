@@ -10,6 +10,8 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
     using SafeMath for uint;
 
+    event Amount(uint amount);
+
     string public constant name = "ShareToken";
     string public constant symbol = "SHR";
     uint8  public constant decimals = 2;
@@ -151,6 +153,9 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
     function rewardAirdrop(address _to, uint _amount) public onlyOwner {
 
+        // this check also ascertains _amount is positive
+        require(_amount <= TOKEN_SUPPLY_AIRDROP_LIMIT);
+
         require(airDropTokenIssuedTotal < TOKEN_SUPPLY_AIRDROP_LIMIT);
 
         uint remainingTokens = TOKEN_SUPPLY_AIRDROP_LIMIT.sub(airDropTokenIssuedTotal);
@@ -171,6 +176,9 @@ contract ShareToken is ERC20Token, WhiteListManager {
     }
 
     function rewardBounty(address _to, uint _amount) public onlyOwner {
+
+        // this check also ascertains _amount is positive
+        require(_amount <= TOKEN_SUPPLY_BOUNTY_LIMIT);
 
         require(bountyTokenIssuedTotal < TOKEN_SUPPLY_BOUNTY_LIMIT);
 
@@ -214,7 +222,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
         set(_to);
     }
 
-    function handlePresaleTokenMany(address[] addrList, uint[] amountList) onlyOwner {
+    function handlePresaleTokenMany(address[] addrList, uint[] amountList) public onlyOwner {
 
         require(addrList.length == amountList.length);
 

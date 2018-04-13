@@ -27,7 +27,8 @@ var bounty = async function(contract, account, tokens){
 //                         TEST CASES
 //*****************************************************************************************
 
-contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT]) {
+contract('Bounty Testcases', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT]) {
+
     console.log("OWNER: ", OWNER);
     console.log("RECIPIENT: ", RECIPIENT);
     console.log("ANOTHER ACCOUNT:", ANOTHER_ACCOUNT);
@@ -78,18 +79,16 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
     })
 
     it('Reward bounty a negative number of tokens should revert', async function(){
-        //const { logs } = await this.token.rewardBounty(ANOTHER_ACCOUNT, -1 * constants.TEST_BALANCE);
-        //const transferEvent = logs.find(e => e.event === "Transfer");
-        //console.log(transferString(transferEvent))
+        await assertRevert(this.token.rewardBounty(ANOTHER_ACCOUNT, -3));
 
-        await assertRevert(this.token.rewardBounty(ANOTHER_ACCOUNT, -1 * constants.TEST_BALANCE));
     })
 
-    it('Reward Bounty with an absurdly large amount of tokens should return the maximum', async function(){
-        const { logs } = await this.token.rewardBounty(ANOTHER_ACCOUNT,
-                                                        constants.LARGER_THAN_TOTAL);
-        const event = logs.find(e => e.event === "Transfer");
-        assert.equal(event.args._value.toNumber(), constants.TOTAL_BOUNTY);
+    it('Reward Bounty with an absurdly large amount of tokens should revert', async function(){
+        await assertRevert(this.token.rewardBounty(ANOTHER_ACCOUNT, constants.LARGER_THAN_TOTAL));
+        // const { logs } = await this.token.rewardBounty(ANOTHER_ACCOUNT,
+        //                                                constants.LARGER_THAN_TOTAL);
+        // const event = logs.find(e => e.event === "Transfer");
+        // assert.equal(event.args._value.toNumber(), constants.TOTAL_BOUNTY);
     })
 })
 

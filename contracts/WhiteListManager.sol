@@ -43,7 +43,7 @@ contract WhiteListManager is Owned {
         }
     }
 
-    function isWhitelisted(address addr) public returns (bool) {
+    function isWhitelisted(address addr) public view returns (bool) {
 
         return list[addr];
     }

@@ -32,12 +32,16 @@ contract ERC20Token is ERC20Interface {
 
     /* Transfer the balance from owner's account to another account */
     function transfer(address _to, uint _amount) public returns (bool success) {
-        // amount sent cannot exceed balance
-        require(balances[msg.sender] >= _amount);
+
+        require(_to != address(0x00));
 
         // Do not allow to transfer token to contract address to avoid tokens getting stuck
         require(isContract(_to) == false);
 
+        // amount sent cannot exceed balance
+        require(balances[msg.sender] >= _amount);
+
+        
         // update balances
         balances[msg.sender] = balances[msg.sender].sub(_amount);
         balances[_to]        = balances[_to].add(_amount);
@@ -50,11 +54,11 @@ contract ERC20Token is ERC20Interface {
 
     /* Allow _spender to withdraw from your account up to _amount */
     function approve(address _spender, uint _amount) public returns (bool success) {
+        
+        require(_spender != address(0x00));
+
         // approval amount cannot exceed the balance
         require(balances[msg.sender] >= _amount);
-
-        // Only allow contract address
-        require(isContract(_spender));
 
         // update allowed amount
         allowed[msg.sender][_spender] = _amount;

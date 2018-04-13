@@ -18,7 +18,7 @@ var sellToAccount = utilities.sellToAccount
 //                         TEST CASES 
 //*****************************************************************************************
 
-contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT]) {
+contract('ShareToken Testcase', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT]) {
     var accounts = [OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT];
     console.log("OWNER: ", OWNER);
     console.log("NEW OWNER: ", NEW_OWNER);
@@ -34,6 +34,8 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
        // set ico
        await this.token.setIcoContract(this.mainsale.address);
 
+
+        // add to whitelist
        for (var i=0; i < accounts.length; i++){
            await this.token.set(accounts[i]);
        }
@@ -148,6 +150,24 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
     it('Transfer from an EMPTY account must revert', async function(){
         await assertRevert.assertRevert(this.token.transfer(NEW_OWNER, constants.TEST_BALANCE),
                                                             {from: ANOTHER_ACCOUNT})
+    })
+
+    it('Transfer a negative amount must revert', async function(){
+        const balanceAfter = await sellToAccount(this.token,
+                                                this.mainsale,
+                                                OWNER,
+                                                constants.TEST_BALANCE
+                                                );
+
+        assert.equal(balanceAfter, constants.TEST_BALANCE);
+        await assertRevert.assertRevert(this.token.transfer(NEW_OWNER, -1));
+    })
+
+    it('Approve a negative amount must revert', async function(){
+        const balanceAfter = await sellToAccount(this.token, this.mainsale, OWNER, constants.TEST_BALANCE);
+        assert.equal(balanceAfter, constants.TEST_BALANCE);
+        
+        await assertRevert.assertRevert(this.token.approve(this.mainsale.address, -1));
     })
 
     it('Transfer from an account without approval', async function(){

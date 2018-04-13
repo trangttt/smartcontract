@@ -23,7 +23,7 @@ var assertRevert = assertRevert.assertRevert
 //                         TEST CASES 
 //*****************************************************************************************
 
-contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT]) {
+contract('Whitelist Testcases', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT]) {
     var accounts = [OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT];
     console.log("OWNER: ", OWNER);
     console.log("NEW OWNER: ", NEW_OWNER);
@@ -55,7 +55,7 @@ contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT])
 
     it('set single address and check', async function(){
         this.whitelist.set(NEW_OWNER);
-        const tx = await this.whitelist.isWhitelisted.call(NEW_OWNER);
+        const tx = await this.whitelist.isWhitelisted(NEW_OWNER);
         assert.equal(tx, true);
     })
 

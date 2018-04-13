@@ -39,7 +39,7 @@ var presalePlural = async function(contract, accounts, tokens){
 //                         TEST CASES
 //*****************************************************************************************
 
-contract('ShareToken', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT, ANOTHER_ACCOUNT2]) {
+contract('Seed and Presale Testcases', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_ACCOUNT, ANOTHER_ACCOUNT2]) {
     console.log("OWNER: ", OWNER);
     console.log("RECIPIENT: ", RECIPIENT);
     console.log("ANOTHER ACCOUNT 1:", ANOTHER_ACCOUNT);

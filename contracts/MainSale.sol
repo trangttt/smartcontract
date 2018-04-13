@@ -37,7 +37,7 @@ contract MainSale is Owned, usingOraclize {
 
         shrToken = ShareToken(_tokenAddress);
 
-        updateRate();
+        // updateRate();
     }
 
     /* Allow whitelisted users to send ETH to token contract for buying tokens */
@@ -47,10 +47,10 @@ contract MainSale is Owned, usingOraclize {
         // Only whitelisted address can buy tokens. Otherwise, refund
         require (shrToken.isWhitelisted(msg.sender));
 
-        if (isUpdateRateRunning == false) {
+        // if (isUpdateRateRunning == false) {
             
-            updateRate();
-        }
+        //     updateRate();
+        // }
         
         uint tokens = 0;
 
@@ -67,8 +67,8 @@ contract MainSale is Owned, usingOraclize {
         // If the allocated tokens exceed the limit, must refund to user
         if (totalIssuedTokens.add(tokens) > TOKEN_SUPPLY_MAINSALE_LIMIT) {
 
-            uint tokensAvailable = TOKEN_SUPPLY_MAINSALE_LIMIT - totalIssuedTokens;
-            uint tokensToRefund = tokens - tokensAvailable;
+            uint tokensAvailable = TOKEN_SUPPLY_MAINSALE_LIMIT.sub(totalIssuedTokens);
+            uint tokensToRefund = tokens.sub(tokensAvailable);
             uint ethToRefundInWei = tokensToRefund.mul(10**18).div(tokenPriceInCent).div(ethUsdRateInCent);
             
             // Refund

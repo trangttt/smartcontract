@@ -13,7 +13,7 @@ module.exports = {
       // host: "127.0.0.1",
       // port: 8545,
       provider: function() {
-          return new HDWalletProvider(mnemonic, "http://127.0.0.1:8545/", 0);
+          return new HDWalletProvider(mnemonic, "http://127.0.0.1:8545/", 0, 5);
       },
       network_id: "*", // Match any network id
       gas: 4500000
