@@ -67,8 +67,8 @@ contract MainSale is Owned, usingOraclize {
         // If the allocated tokens exceed the limit, must refund to user
         if (totalIssuedTokens.add(tokens) > TOKEN_SUPPLY_MAINSALE_LIMIT) {
 
-            uint tokensAvailable = TOKEN_SUPPLY_MAINSALE_LIMIT - totalIssuedTokens;
-            uint tokensToRefund = tokens - tokensAvailable;
+            uint tokensAvailable = TOKEN_SUPPLY_MAINSALE_LIMIT.sub(totalIssuedTokens);
+            uint tokensToRefund = tokens.sub(tokensAvailable);
             uint ethToRefundInWei = tokensToRefund.mul(tokenPriceInCent).mul(10**18).div(ethUsdRateInCent);
             
             // Refund

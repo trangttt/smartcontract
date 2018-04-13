@@ -62,8 +62,10 @@ var approvalString = function(event){
             "Value: " + args._value.toNumber()].join(", ")
 }
 
-var getWeiBalance = function(address){
-    return web3.eth.getBalance(address).toNumber();
+var getWeiBalance = async function(address){
+    var _getBalance = await util.promisify((a, cb) => web3.eth.getBalance(a, cb));
+    var value = await _getBalance(address);
+    return value.toNumber();
 }
 
 

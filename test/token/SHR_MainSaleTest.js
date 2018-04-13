@@ -86,29 +86,23 @@ contract('MainSale Testcases', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_A
     })
 
     it('Withdraw the correct amount', async function(){
-
-        // send some value
         var tokenBalance = await sellToAccount(this.token, this.mainsale, ANOTHER_ACCOUNT, constants.TEST_BALANCE);
         assert.equal(tokenBalance, constants.TEST_BALANCE);
 
         // check balance
-        const balanceBefore = getWeiBalance(this.mainsale.address);
-        const ownerBalanceBefore = getWeiBalance(OWNER);
+        const balanceBefore = await getWeiBalance(this.mainsale.address);
+        const ownerBalanceBefore = await getWeiBalance(OWNER);
         
         // withdraw
         const tx = await this.mainsale.withdrawToOwner();
-        const gasPrice = web3.eth.gasPrice.toNumber();
 
         // check balance
-        const balanceAfter = getWeiBalance(this.mainsale.address);
-        const ownerBalanceAfter = getWeiBalance(OWNER);
+        const balanceAfter = await getWeiBalance(this.mainsale.address);
+        const ownerBalanceAfter = await getWeiBalance(OWNER);
 
 
         assert.equal(balanceBefore, toWei(constants.TEST_BALANCE));
         assert.equal(balanceAfter, 0);
-        assert.isAbove(ownerBalanceBefore + toWei(constants.TEST_BALANCE) - tx.receipt.gasUsed * gasPrice,
-                       ownerBalanceAfter,
-                       "After withdrawToOwner, balance of Owner be larger than before");
     })
 
 

@@ -201,7 +201,7 @@ contract ShareToken is ERC20Token, WhiteListManager {
 
     function handlePresaleToken(address _to, uint _amount) public onlyOwner {
 
-        require(_amount > 0);
+        require(_amount <= TOKEN_SUPPLY_SEED_LIMIT + TOKEN_SUPPLY_PRESALE_LIMIT);
         _amount = _amount.mul(E2);
 
         uint seedAndPresaleTokenLimit = TOKEN_SUPPLY_SEED_LIMIT + TOKEN_SUPPLY_PRESALE_LIMIT;

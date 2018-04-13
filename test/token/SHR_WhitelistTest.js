@@ -3,7 +3,7 @@ var expectEvent = require('../helpers/expectEvent.js');
 var utilities = require('../helpers/utilities.js');
 var constants = require('../config/ShareTokenFigures.js');
 
-const Whitelist = artifacts.require('WhiteListManager');
+const Whitelist = artifacts.require('ShareToken');
 
 
 //*****************************************************************************************
@@ -54,9 +54,19 @@ contract('Whitelist Testcases', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_
     })
 
     it('set single address and check', async function(){
-        this.whitelist.set(NEW_OWNER);
-        const tx = await this.whitelist.isWhitelisted(NEW_OWNER);
-        assert.equal(tx, true);
+        await this.whitelist.set(NEW_OWNER);
+        const res = await this.whitelist.isWhitelisted.call(NEW_OWNER);
+        assert.equal(res, true);
+    })
+
+    it('unset single address and check', async function(){
+        await this.whitelist.set(NEW_OWNER);
+        const res = await this.whitelist.isWhitelisted.call(NEW_OWNER);
+        assert.equal(res, true);
+
+        await this.whitelist.unset(NEW_OWNER);
+        const res1 = await this.whitelist.isWhitelisted.call(NEW_OWNER);
+        assert.equal(res1, false);
     })
 
     it('set many addresses and check', async function(){

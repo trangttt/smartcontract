@@ -63,7 +63,7 @@ contract('Seed and Presale Testcases', function ([OWNER, NEW_OWNER, RECIPIENT, A
         const balanceAfter = await getBalance(this.token, ANOTHER_ACCOUNT);
 
         // handlePresaleToken multiply token with 100 
-        assert.equal(balanceAfter, constants.TEST_BALANCE * constants.DECIMAL_PLACES);
+        assert.equal(balanceAfter, constants.TEST_BALANCE * 10**constants.DECIMAL_PLACES);
     })
 
     it('Transfer presale, totalSupply shoud reflect', async function(){
@@ -105,7 +105,7 @@ contract('Seed and Presale Testcases', function ([OWNER, NEW_OWNER, RECIPIENT, A
         await this.token.handlePresaleTokenMany(ACCOUNTS, TOKENS);
         for (var i=0; i < ACCOUNTS.length; i++){
             const balanceAfter = await getBalance(this.token, ACCOUNTS[i])
-            assert.equal(balanceAfter, TOKENS[i])
+            assert.equal(balanceAfter, TOKENS[i] * 10**constants.DECIMAL_PLACES );
         }
     })
 })
