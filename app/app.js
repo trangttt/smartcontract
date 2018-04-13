@@ -6,7 +6,7 @@ global.web3 = web3;
 var utils = require('./utils');
 
 require('./global').globalize();
-var dat = require('./data1');
+var dat = require('./data/output/data1');
 
 const UNLOCK_ERROR = 'Cannot unlock account.';
 const GASPRICE_ERROR = 'Cannot get gasPrice.';
