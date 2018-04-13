@@ -40,7 +40,8 @@ contract('MainSale Testcases', function ([OWNER, NEW_OWNER, RECIPIENT, ANOTHER_A
     beforeEach(async function () {
        this.token = await ShareToken.new();
 
-       this.mainsale = await MainSale.new(constants.ETH_USD_RATE, this.token.address);
+       this.mainsale = await MainSale.new()
+       await this.mainsale.startICO(constants.ETH_USD_RATE, this.token.address);
 
        // set ico
        await this.token.setIcoContract(this.mainsale.address);

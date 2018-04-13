@@ -15,19 +15,8 @@ contract MainSale is Owned, usingOraclize {
     // Any token amount must be multiplied by this const to reflect decimals
     uint constant E2 = 10**2;
 
-<<<<<<< HEAD
-    bool public isIcoRunning = true;
-    
-    bool public isUpdateRateRunning = true;
-||||||| merged common ancestors
-    // Will be set to true only if WhiteList contracts are created
-    bool public isIcoRunning = true;
-    
-    bool public isUpdateRateRunning = true;
-=======
     bool public isIcoRunning = false;
     bool public isUpdateRateRunning = false;
->>>>>>> 53e4c4d94fa2212be49d34eea956b7580c28664e
 
     uint public tokenPriceInCent = 2; // cent or $0.02
     uint public ethUsdRateInCent = 0;// cent
@@ -118,7 +107,7 @@ contract MainSale is Owned, usingOraclize {
         ethUsdRateInCent = _ethUsdRateInCent;
         shrToken = ShareToken(_tokenAddress);
 
-        updateRate();
+        // updateRate();
 
         isIcoRunning = true;
     }

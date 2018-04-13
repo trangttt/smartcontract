@@ -3,6 +3,6 @@ var MainSale = artifacts.require("./MainSale.sol");
 
 module.exports = function(deployer) {
     deployer.deploy(ShareToken).then(function(){
-      return deployer.deploy(MainSale, 40000, ShareToken.address);
+      return deployer.deploy(MainSale);
     });
 };
