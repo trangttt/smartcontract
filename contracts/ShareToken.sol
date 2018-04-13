@@ -111,7 +111,12 @@ contract ShareToken is ERC20Token, WhiteListManager {
         return totalTokenIssued;
     }
 
-    function transfer(address _to, uint _amount) public returns (bool success) {
+    function totalPreSaleTokenIssued() public view returns (uint) {
+
+        return seedAndPresaleTokenIssuedTotal;
+    }
+
+    function transfer(address _to, uint _amount) returns (bool success) {
 
         require(isLocked(msg.sender) == false);    
         require(isLocked(_to) == false);

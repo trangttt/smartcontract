@@ -15,9 +15,19 @@ contract MainSale is Owned, usingOraclize {
     // Any token amount must be multiplied by this const to reflect decimals
     uint constant E2 = 10**2;
 
+<<<<<<< HEAD
     bool public isIcoRunning = true;
     
     bool public isUpdateRateRunning = true;
+||||||| merged common ancestors
+    // Will be set to true only if WhiteList contracts are created
+    bool public isIcoRunning = true;
+    
+    bool public isUpdateRateRunning = true;
+=======
+    bool public isIcoRunning = false;
+    bool public isUpdateRateRunning = false;
+>>>>>>> 53e4c4d94fa2212be49d34eea956b7580c28664e
 
     uint public tokenPriceInCent = 2; // cent or $0.02
     uint public ethUsdRateInCent = 0;// cent
@@ -26,18 +36,8 @@ contract MainSale is Owned, usingOraclize {
 
     uint public constant ETH_USD_UPDATE_PERIOD = 86400; // 24 * 60 * 60 (for every 24 hours) 
 
-    // Must pre-deploy the ShareToken contract to get its address
-    // Must supply the ETH/USD rate (in cent) upon token creation
-    function MainSale(uint _ethUsdRateInCent, address _tokenAddress) public payable {
+    function MainSale() payable {
 
-        require(_ethUsdRateInCent > 0);
-        require(_tokenAddress != address(0x0));
-
-        ethUsdRateInCent = _ethUsdRateInCent;
-
-        shrToken = ShareToken(_tokenAddress);
-
-        // updateRate();
     }
 
     /* Allow whitelisted users to send ETH to token contract for buying tokens */
@@ -110,7 +110,15 @@ contract MainSale is Owned, usingOraclize {
         isIcoRunning = false;
     }
 
-    function startICO() public onlyOwner {
+    function startICO(uint _ethUsdRateInCent, address _tokenAddress) onlyOwner {
+
+        require(_ethUsdRateInCent > 0);
+        require( _tokenAddress != address(0x0) );
+
+        ethUsdRateInCent = _ethUsdRateInCent;
+        shrToken = ShareToken(_tokenAddress);
+
+        updateRate();
 
         isIcoRunning = true;
     }
