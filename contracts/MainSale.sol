@@ -68,7 +68,7 @@ contract MainSale is Owned, usingOraclize {
 
             uint tokensAvailable = TOKEN_SUPPLY_MAINSALE_LIMIT - totalIssuedTokens;
             uint tokensToRefund = tokens - tokensAvailable;
-            uint ethToRefundInWei = tokensToRefund.div(tokenPriceInCent).div(ethUsdRateInCent).mul(10**18);
+            uint ethToRefundInWei = tokensToRefund.mul(tokenPriceInCent).mul(10**18).div(ethUsdRateInCent);
             
             // Refund
             msg.sender.transfer(ethToRefundInWei);
