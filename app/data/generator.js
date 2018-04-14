@@ -70,7 +70,7 @@ function isChecksumAddress (address) {
     return ret ===  origin
 }
 
-/*
+/**
  * Form js file path from data path
  *
  * @method formName
@@ -103,7 +103,7 @@ function processFolder(folderPath){
             console.log("File ", contents[i])
             
             addresses = readFile(path.join(inFolder, contents[i]))
-            if (addresses !== null)
+            if (addresses !==    null)
                 writeFile(addresses, path.join(outFolder, formName(contents[i])));
         }
    } catch (err){
@@ -165,8 +165,9 @@ function readFile(filePath) {
 
 }
 
-/* 
+/** 
  *  Get an array of 
+ * 
  *  @method writeFile
  *  @param {array} array of object of type {address: xx, token: xx} 
  *  @param {filePath} name of output file
